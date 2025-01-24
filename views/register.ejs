@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head', { title: 'Sign up' }); %>
+    <link rel="stylesheet" href="/css/login.css">
+</head>
+
+<body>
+
+    <div class="login-container">
+        <div class="login-wrap tl-rounded">
+            <img src="/images/TaskListLogo.png" alt="" id="logo">
+            <h3 class="login-form-title">Create an Account</h3>
+            <form method="post" action="/register" class="login-form">
+                <div class="wrap-login-input">
+                    <input type="text" name="name" placeholder="Name" class="login-form-input">
+                </div>
+                <div class="wrap-login-input">
+                    <input type="text" name="username" placeholder="Username" class="login-form-input">
+                </div>
+                <div class="wrap-login-input">
+                    <input type="text" name="email" placeholder="Email" class="login-form-input">
+                </div>
+                <div class="wrap-login-input">
+                    <input type="password" name="password" placeholder="Password" class="login-form-input">
+                </div>
+                <button class="login-button">LOGIN</button>
+            </form>
+            <% if (returnMessage.length > 0) { %>
+                <p class="return-message"><%= returnMessage %></p>
+            <% } %>
+            <p class="login-no-account">Already have an account? <a href="/login">Login</a></p>
+        </div>
+    </div>
+
+</body>
+
+</html>

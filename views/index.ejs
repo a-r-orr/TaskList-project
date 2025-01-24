@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head', { title: 'Kanban View' }); %>
+</head>
+
+<body>
+    <%- include('./partials/navbar'); %>
+    <main>
+        <div class="container">
+            <!-- <h1>Task List</h1> -->
+            <div class="task-categories">
+                <% priorities.forEach((priority)=> { %>
+                    <!-- this creates a tile for each priority -->
+                    <div id=<%=priority.priority_name %> data-priority=<%=priority.priority_id %> class="task-category" style="background-color: <%=priority.tile_colour %>;">
+                            <h2 class="list-header">
+                                <%= priority.priority_name %>
+                            </h2>
+                            <% tasks.forEach((task)=> { %>
+                                <% if (task.priority_id===priority.priority_id) { %>
+                                    <div data-task=<%=task.task_id %> id="<%=task.task_id %>" class="task" >
+                                        <!-- this creates a card for each task inside the relevant priority tile -->
+                                        <button class="task-drag" draggable="true">
+                                            <i class='bx bx-dots-vertical' ></i>
+                                        </button>
+                                        
+                                        <h3 class="task-title">
+                                            <%= task.task_name %>
+                                        </h3>
+                                        <p class="task-text">
+                                            <%= task.description %>
+                                        </p>
+                                        <button class="task-toggle">
+                                            <i class='bx bx-chevron-down'></i>
+                                            <i class='bx bx-x' ></i>
+                                        </button>
+                                        <button class="edit-task-button active">Edit</button>
+                                        <button class="close-edit-task-button">Hide edit</button>
+
+                                        <div class="edit-task-panel">
+                                            <form class="edit-task-form" action="post">
+                                                <input type="text" value="<%= task.task_name %>">
+                                                <input type="text" value="<%= task.description %>">
+
+                                                <button>Submit</button>
+                                            </form>
+        
+                                            <!-- <button class="modal-close">Close Modal</button> -->
+                                        </div>
+                                    </div>
+                                    
+                                <% } %>
+                            <% }); %>
+                    </div>
+                    <% }); %>
+            </div>
+        </div>
+    </main>
+    <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
+    <script src="index.js"></script>
+</body>
+
+</html>
