@@ -27,8 +27,8 @@
                 </div>
                 <button class="login-button">LOGIN</button>
             </form>
-            <% if (returnMessage.length > 0) { %>
-                <p class="return-message"><%= returnMessage %></p>
+            <% if (error) { %>
+                <p class="return-message"><%= error %></p>
             <% } %>
             <p class="login-no-account">Already have an account? <a href="/login">Login</a></p>
         </div>

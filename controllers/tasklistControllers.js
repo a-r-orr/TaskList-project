@@ -1,38 +1,56 @@
 const conn = require('./../utils/dbconn');
-const project_id = 1;
 const bcrypt = require('bcrypt');
+const axios = require('axios');
+
+const project_id = 1;
 
 exports.getRoot = (req, res) => {
-    res.render('landing');
+    const session = req.session;
+    if (session.isLoggedIn) {
+        res.render('dashboard', { userDetails: session.userDetails, userProjects: session.userProjects });
+    } else {
+        res.render('landing');
+    }
 }
 
 exports.getRegister = (req, res) => {
-    res.render('register', { returnMessage: ""});
+    const session = req.session;
+    res.render('register', { error: session.errorMessage });
 }
 
 exports.postRegister = async (req, res) => {
     const { name, username, email, password } = req.body;
+    const session = req.session;
+    const endpoint = `${process.env.API_URL}/users/new`;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        // console.log(hashedPassword);
-        const checkUserSQL = `SELECT user_id FROM user
-        WHERE user.username = ? OR user.email = ?`;
-        const checkVals = [username, email];
-        const [ userDetails, fielddata1 ] = await conn.query(checkUserSQL, checkVals);
-        // const userID = userDetails[0].user_id;
-
-        if (userDetails.length>0) {
-            res.status(400);
-            res.render('register', { returnMessage: "Username or email already registered." });
-        } else {
-            const registerUserSQL = `INSERT INTO user (username, email, password, display_name, usertype_id)
-             VALUES (?, ?, ?, ?, 1)`;
-            
-            const newUserVals = [username, email, hashedPassword, name];
-            const [ newUserDetails, fielddata2 ] = await conn.query(registerUserSQL, newUserVals);
-            res.redirect('/login');
-        }
+        
+        const vals = { 
+            name: name,
+            username: username,
+            email: email,
+            hashedPassword: hashedPassword
+         };
+        
+        axios
+            .post(endpoint, vals, { validateStatus: (status) => { return status < 500 } })
+            .then((response) => {
+                const status = response.status;
+                if (status === 201) {
+                    session.errorMessage = null;
+                    res.redirect('/login');
+                } else {
+                    const data = response.data;
+                    session.errorMessage = data.message;
+                    res.redirect('/register');
+                }
+            })
+            .catch((error) => {
+                console.log(`Error making API request: ${error}`);
+                session.errorMessage = "Sorry, something went wrong. Please try that again."
+                res.redirect('/register');
+            });
 
     } catch (err) {
         console.error(err);
@@ -45,38 +63,49 @@ exports.getLogin = (req, res) => {
 }
 
 exports.postLogin = async (req, res) => {
+    const vals = { email, password } = req.body;
+    const session = req.session;
+    const endpoint = `${process.env.API_URL}/users`;
+    let userEndpoint = null;
+    let projectsEndpoint = null;
+    // let tasksEndpoint = null;
+    let loginData = null;
+    let endpoints = null;
+
     try {
-        const { email, password } = req.body;
-
-        const vals = [email, email];
-        // console.log(vals);
-        const checkUserSQL = `SELECT user_id, password FROM user
-        WHERE user.email = ? OR user.username = ?`;
-
-        const [ userDetails, fielddata1 ] = await conn.query(checkUserSQL, vals);
-        // console.log(userDetails);
-        
-        // console.log(userID);
-        if (userDetails.length > 0) {
-            const userID = userDetails[0].user_id;
-            if (await bcrypt.compare(password, userDetails[0].password)) {
-                const session = req.session;
-                session.isLoggedIn = true;
-                session.userID = userID;
-                // console.log(session);
-                res.redirect('/table-view');
-            } else {
-                res.render('login', { returnMessage: "The credentials provided did not match a registered user"});
-            }
-            
+        const loginResponse = await axios.post(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
+        if (loginResponse.status === 200) {
+            session.errorMessage = null;
+            session.isLoggedIn = true;
+            loginData = loginResponse.data.result;
+            session.userID = loginData.userID;
+            // res.redirect('/');
         } else {
-            res.render('login', { returnMessage: "The credentials provided did not match a registered user"});
+            loginData = loginResponse.data;
+            session.errorMessage = loginData.message;
+            res.redirect('/login');
         }
 
-    } catch (err) {
-        console.error(err);
-    }
+        userEndpoint = `${process.env.API_URL}/users/${session.userID}`;
+        projectsEndpoint = `${process.env.API_URL}/users/${session.userID}/projects`;
+        // tasksEndpoint = `${process.env.API_URL}/users/${session.userID}/projects`;
+        endpoints = [ userEndpoint, projectsEndpoint ];
 
+        const requests = endpoints.map((endpoint) => axios.get(endpoint));
+        await Promise.all(requests).then(( [ {data: user}, {data: userProjects} ] ) => {
+            console.log(user.result);
+            console.log(userProjects.result);
+            session.userDetails = user.result[0];
+            session.userProjects = userProjects.result;
+        });
+
+        res.redirect('/');
+
+    } catch (error) {
+        console.log(`postLogin - Error making API request: ${error}`);
+        session.errorMessage = "Sorry, something went wrong. Please try that again."
+        res.redirect('/login');
+    }
 }
 
 exports.getLogout = async (req, res) => {
@@ -88,9 +117,6 @@ exports.getLogout = async (req, res) => {
     res.redirect('/');
 }
 
-exports.getDashboard = async (req, res) => {
-    
-}
 
 exports.getTableView = async (req, res) => {
     const project_id = 1;

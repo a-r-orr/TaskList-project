@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head', { title: 'Dashboard' }); %>
+</head>
+
+<body>
+    <header>
+        <%- include('./partials/navbar'); %>
+    </header>
+
+    <content>
+        <%- include('./partials/sidebar', { userProjects: userProjects }); %>
+        
+        <div class="container">
+
+            <h1><%= userDetails.display_name %>'s Dashboard</h1>
+            
+
+        </div>
+    </content>
+</body>
+
+</html>
