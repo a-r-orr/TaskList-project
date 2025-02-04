@@ -237,9 +237,18 @@ nav a:hover {
     border-radius: 5px;
 }
 
+.sidebar-projects a.current-project {
+    background-color: var(--tl-theme-myrtle);
+    color: var(--tl-theme-white);
+}
+
 .sidebar-projects a:hover,
 .sidebar-views a:hover {
     color: var(--tl-theme-myrtle);
+}
+
+.sidebar-projects a.current-project:hover {
+    color: var(--tl-theme-dark);
 }
 
 @media (width < 1050px) {
@@ -254,7 +263,6 @@ nav a:hover {
     }
 }
 
-
 .container {
     /* width: 95vw; */
     /* height: 180vh; */
@@ -267,8 +275,77 @@ nav a:hover {
     flex-grow: 9999;
 }
 
+.form-container {
+    margin: 0 auto;
+    width: 100%;
+    min-height: 100dvh;
+    padding: 15px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    /* background-color: var(--tl-theme-myrtle); */
+}
+
+.form-wrap {
+    width: 390px;
+    background-color: var(--tl-theme-offwhite);
+    border: 1px solid var(--tl-theme-myrtle);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 77px 55px 33px 55px;
+}
+
+.form-title {
+    display: block;
+    font-size: 30px;
+    color: var(--tl-theme-dark);
+    padding-bottom: 40px;
+}
+
+.project-form {
+    display: block;
+    font-size: 30px;
+    color: var(--tl-theme-dark);
+    width: 100%;
+}
+
+.wrap-form-input {
+    width: 100%;
+    border-bottom: 2px solid var(--tl-theme-keppel);
+    margin-bottom: 30px;
+}
+
+.form-input {
+    width:100%;
+    height: 45px;
+    display: block;
+    outline: none;
+    border: none;
+    color: var(--tl-theme-keppel);
+    background: transparent;
+    padding: 0 5px;
+}
+
+.form-button {
+    font-size: 15px;
+    width: 100%;
+    height: 3em;
+    outline: none;
+    border: none;
+    border-radius: 1.5em;
+    font-weight: 700;
+    background-color: var(--tl-theme-keppel);
+    color: var(--tl-theme-offwhite);
+}
+
+.form-button:hover {
+    cursor: pointer;
+}
+
 /* Some utility styling classes */
 .tl-rounded {
-    border: none;
+    /* border: none; */
     border-radius: 15px;
 }
