@@ -12,10 +12,12 @@
         <br/>
         <a href="/new-project">+ New Project</a>
     </div>
-    <div class="sidebar-views">
-        <h4>Views</h4>
-        <a href="/table-view">Table view</a>
-        <a href="/kanban-view">Kanban view</a>
-        <a href="/priority-view">Priority view</a>
-    </div>
+    <% if (showViews) { %>
+        <div class="sidebar-views">
+            <h4>Views</h4>
+            <a href="/table-view/?project=<%= currentProject %>">Table view</a>
+            <a href="/kanban-view/?project=<%= currentProject %>">Kanban view</a>
+            <a href="/priority-view/?project=<%= currentProject %>">Priority view</a>
+        </div>
+    <% } %>
 </div>

@@ -288,7 +288,7 @@ nav a:hover {
 }
 
 .form-wrap {
-    width: 390px;
+    width: 500px;
     background-color: var(--tl-theme-offwhite);
     border: 1px solid var(--tl-theme-myrtle);
     display: flex;
@@ -304,7 +304,7 @@ nav a:hover {
     padding-bottom: 40px;
 }
 
-.project-form {
+.project-form, .task-form {
     display: block;
     font-size: 30px;
     color: var(--tl-theme-dark);
@@ -342,6 +342,35 @@ nav a:hover {
 
 .form-button:hover {
     cursor: pointer;
+}
+
+.edit-button, .add-button {
+    text-decoration: none;
+    font-size: 15px;
+    width: 100%;
+    height: 3em;
+    padding: 5px 10px;
+    outline: none;
+    border: none;
+    border-radius: 1.5em;
+    font-weight: 600;
+    color: var(--tl-theme-offwhite);
+}
+
+.edit-button {
+    background-color: var(--tl-theme-myrtle);
+}
+
+.add-button {
+    background-color: var(--tl-theme-dark);
+}
+
+.edit-button:hover {
+    color: var(--tl-theme-dark);
+}
+
+.add-button:hover {
+    color: var(--tl-theme-myrtle);
 }
 
 /* Some utility styling classes */

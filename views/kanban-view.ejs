@@ -11,18 +11,65 @@
     </header>
 
     <content>
-        <%- include('./partials/sidebar', { userProjects: userProjects }); %>
+        <%- include('./partials/sidebar', { userProjects: userProjects, currentProject: currentProject, showViews: true }); %>
         
         <div class="container">
             <h1>Kanban View</h1>
-            <%- include('./partials/task-category-layout', {
-                categories: categories,
-                tasks: tasks
-            }); %>
+            <div class="task-categories">
+                <% categories.forEach((category)=> { %>
+                    <!-- this creates a tile for each category -->
+                    <div id=<%=category.completion_status_name %> data-category=<%= category.completion_status_id %> class="task-category"  style="border-color: <%= category.tile_colour %>;">
+                            <h2 class="list-header" style="background-color: <%= category.tile_colour %>;">
+                                <%= category.completion_status_name %>
+                            </h2>
+                            <% tasks.forEach((task)=> { %>
+                                <% if (task.completion_status_id===category.completion_status_id) { %>
+                                    <div data-task=<%=task.task_id %> id="<%=task.task_id %>" class="task" >
+                                        <!-- this creates a card for each task inside the relevant category tile -->
+                                        <button class="task-drag" draggable="true">
+                                            <i class='bx bx-dots-vertical' ></i>
+                                        </button>
+                                        
+                                        <h3 class="task-title">
+                                            <%= task.task_name %>
+                                        </h3>
+                                        <p class="task-text">
+                                            <%= task.description %>
+                                        </p>
+                                        <button class="task-toggle">
+                                            <i class='bx bx-chevron-down'></i>
+                                            <i class='bx bx-x' ></i>
+                                        </button>
+                                        <button class="edit-task-button active">Edit</button>
+                                        <button class="close-edit-task-button">Hide edit</button>
+            
+                                        <div class="edit-task-panel">
+                                            <form class="edit-task-form" action="post">
+                                                <input type="text" value="<%= task.task_name %>">
+                                                <input type="text" value="<%= task.description %>">
+            
+                                                <button>Submit</button>
+                                            </form>
+            
+                                            <!-- <button class="modal-close">Close Modal</button> -->
+                                        </div>
+                                    </div>
+                                    
+                                <% } %>
+                            <% }); %>
+                    </div>
+                    <% }); %>
+            </div>
         </div>
     </content>
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-    <script src="kanban-view.js"></script>
+    <script>
+        const JSONcategories = `<%- JSON.stringify(categories) %>`;
+        const newCats = JSON.parse(JSONcategories);
+        const currentProjJSON = `<%= currentProject %>`;
+        const currentProjNum = JSON.parse(currentProjJSON);
+    </script>
+    <script src="/js/kanban-view.js"></script>
 </body>
 
 </html>
