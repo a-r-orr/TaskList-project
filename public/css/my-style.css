@@ -181,13 +181,13 @@ i {
     flex-direction: column;
 }
 
-
+/* 
 table {
     width:100%;
     border-collapse: collapse;
 }
 
-caption,
+
 th,
 td {
     padding: 1rem;
@@ -225,4 +225,4 @@ tr:nth-of-type(2n) {
         font-weight: 700;
         text-transform: capitalize;
     }
-}
+} */

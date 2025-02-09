@@ -2,13 +2,22 @@
     <div class="sidebar-projects">
         <h4>Projects</h4>
         <% userProjects.forEach((project) => { %>
-            <a href="#"><%= project.project_name %></a>
+            <% if (project.project_id == currentProject) { %>
+                <a href="/table-view/?project=<%= project.project_id %>" class="current-project"><%= project.project_name %></a>
+            <% } else { %>
+                <a href="/table-view/?project=<%= project.project_id %>"><%= project.project_name %></a>
+            <% } %>
         <% }); %>
+        
+        <br/>
+        <a href="/new-project">+ New Project</a>
     </div>
-    <div class="sidebar-views">
-        <h4>Views</h4>
-        <a href="/table-view">Table view</a>
-        <a href="/kanban-view">Kanban view</a>
-        <a href="/priority-view">Priority view</a>
-    </div>
+    <% if (showViews) { %>
+        <div class="sidebar-views">
+            <h4>Views</h4>
+            <a href="/table-view/?project=<%= currentProject %>">Table view</a>
+            <a href="/kanban-view/?project=<%= currentProject %>">Kanban view</a>
+            <a href="/priority-view/?project=<%= currentProject %>">Priority view</a>
+        </div>
+    <% } %>
 </div>

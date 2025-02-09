@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head', { title: 'New Project' }); %>
+</head>
+
+<body>
+    <header>
+        <%- include('./partials/navbar'); %>
+    </header>
+
+    <content>
+        <div class="form-container">
+            <div class="form-wrap tl-rounded">
+                <h3 class="form-title">Make a New Project</h3>
+                <form method="post" action="/new-project" class="project-form">
+                    <div class="wrap-form-input">
+                        <input type="text" name="projectName" placeholder="Project Name" class="form-input">
+                    </div>
+                    <div class="wrap-form-input">
+                        <input type="text" name="projectDescription" placeholder="Project Description" class="form-input">
+                    </div>
+
+                    <button class="form-button">Create Project</button>
+                </form>
+            </div>
+        </div>
+    </content>
+</body>
+
+</html>

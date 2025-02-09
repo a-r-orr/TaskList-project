@@ -3,34 +3,43 @@
 
 <head>
     <%- include('./partials/head', { title: 'Table View' }); %>
+    <link rel="stylesheet" href="/css/dataTables.css">
 </head>
 
 <body>
     <header>
-        <%- include('./partials/navbar', { projects: userProjects }); %>
+        <%- include('./partials/navbar'); %>
     </header>
 
     <content>
-        <%- include('./partials/sidebar', { userProjects: userProjects }); %>
+        <%- include('./partials/sidebar', { userProjects: userProjects, currentProject: currentProject, showViews: true }); %>
         <div class="container">
             <h1>Table View</h1>
-            <table role="table">
-                <caption role="caption">Project Tasks</caption>
-                <tbody role="rowgroup">
+            <h2 id="project-name"></h2>
+            <p id="table-caption"></p>
+            <a href="/edit-project/?project=<%= currentProject %>" class="edit-button">Edit Project</a>
+            <a href="/new-task/?project=<%= currentProject %>" class="add-button">Add New Task</a>
+            <table role="table" id="task-table" class="display">
+                <thead role="rowgroup">
                     <tr role="row">
                         <th role="columnheader">Task</th>
                         <th role="columnheader">Description</th>
                         <th role="columnheader">Priority</th>
                         <th role="columnheader">Completion</th>
                         <th role="columnheader">Due Date</th>
+                        <th role="columnheader">Action</th>
                     </tr>
+                </thead>
+                <tbody role="rowgroup">
                     <% tasks.forEach((task)=> { %>
                         <tr role="row">
                             <td role="cell" data-cell="task"><%= task.task_name %></td>
                             <td role="cell" data-cell="description"><%= task.description %></td>
-                            <td role="cell" data-cell="priority"><%= task.priority_id %></td>
-                            <td role="cell" data-cell="completion"><%= task.completion_status_id %></td>
+                            <td role="cell" data-cell="priority"><%= task.priority_name %></td>
+                            <td role="cell" data-cell="completion"><%= task.completion_status_name %></td>
                             <td role="cell" data-cell="due-date"><%= task.due_date %></td>
+                            <td role="cell"><a href="/edit-task/?task=<%= task.task_id %>" class="edit-button">Edit Task</a></td>
+                            
                         </tr>
                     <% }); %>
                 </tbody>
@@ -38,8 +47,20 @@
             </table>
         </div>
     </content>
+    <!-- Socket.io -->
     <script src="https://cdn.socket.io/4.8.1/socket.io.min.js"></script>
-    <script src="table-view.js"></script>
+    <!-- jQuery -->
+    <script src="/jquery/jquery-3.7.1.min.js"></script>
+    <!-- DataTables -->
+    <script src="/js/dataTables.js"></script>
+    <script>
+        const JSONprojects = `<%- JSON.stringify(userProjects) %>`;
+        const projectsArray = JSON.parse(JSONprojects);
+        const JSONcurrentProj = `<%- JSON.stringify(currentProject) %>`;
+        let currentProj = parseInt(JSON.parse(JSONcurrentProj));
+        
+    </script>
+    <script src="/js/table-view.js"></script>
 </body>
 
 </html>

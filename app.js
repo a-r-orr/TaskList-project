@@ -8,7 +8,7 @@ const dotenv = require('dotenv').config({ path: './config.env' });
 const router = require('./routes/tasklistRoutes');
 const path = require('path');
 const sessions = require('express-session');
-const bcrypt = require('bcrypt');
+const axios = require('axios');
 
 const app = express();
 const server = createServer(app);
@@ -56,23 +56,34 @@ io.on('connection', async (socket) => {
 
     } )
 
-    socket.on('completion status update', async (compStatus, task) => {
-        // console.log('priority: ' + priority);
-        // console.log('task: ' + task);
+    socket.on('completion status update', async (compStatID, compStatName, projectID, taskID) => {
+        
+        const vals = { compStatID, compStatName };
 
-        const project_id = 1;
-        const updateCompletion = `UPDATE task SET completion_status_id=? WHERE task_id=? and project_id=?`;
-        // const selectTasks = `SELECT * FROM task WHERE project_id=?`;
-    
+        const endpoint = `${process.env.API_URL}/projects/${projectID}/tasks/${taskID}/completion`;
+
         try {
-            const [ priorities, fielddata1 ] = await conn.query(updateCompletion, [compStatus, task, project_id]);
-            //const [ tasks, fielddata2 ] = await conn.query(selectTasks, project_id);
+            const updateResponse = await axios.patch(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
             socket.emit('completion status update complete');
+            // if (updateResponse.status === 201) {
+                
+            // } else {
+            //     session.projectInputVals = { 
+            //         projectName: projectName, 
+            //         projectDescription: projectDescription
+            //     };
+            //     res.redirect('/new-project');
+            // }
             
-        } catch (err) {
-            console.error(err);
+        } catch (error) {
+            console.log(`postNewProject - Error making API request: ${error}`);
+            session.errorMessage = "Sorry, something went wrong. Please try that again."
+            // session.projectInputVals = { 
+            //     projectName: projectName, 
+            //     projectDescription: projectDescription
+            // };
+            // res.redirect('/new-project');
         }
-
     } )
 });
 

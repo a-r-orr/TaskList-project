@@ -1,6 +1,5 @@
 const socket = io();
-
-
+// console.log(newCats);
 let tasks = document.getElementsByClassName("task");
 let categories = document.getElementsByClassName("task-category");
 
@@ -20,8 +19,14 @@ for (task of tasks) {
             dragArea.addEventListener("dragleave", handleDragLeave);
 
             dragArea.addEventListener("drop", function (e) {
-                let selected_cat = e.target.parentElement;
-                socket.emit('completion status update', selected_cat.dataset.category, selected_task.dataset.task);
+                let selected_cat = parseInt(e.target.parentElement.dataset.category);
+                // console.log(newCats);
+                // console.log(selected_cat);
+                let cat = newCats.find(cat => cat.completion_status_id === selected_cat);
+                // console.log(cat);
+                //(compStatID, compStatName, projectID, taskID)
+                // console.log('completion status update', cat.completion_status_id, cat.completion_status_name, currentProjNum, selected_task.dataset.task);
+                socket.emit('completion status update', cat.completion_status_id, cat.completion_status_name, currentProjNum, selected_task.dataset.task);
 
                 selected_task = null;
                 selected_cat=null;

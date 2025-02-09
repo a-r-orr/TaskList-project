@@ -12,6 +12,12 @@ router.post('/register', controller.postRegister);
 
 router.get('/logout', controller.getLogout);
 
+router.get('/new-project', controller.getNewProject);
+router.post('/new-project', controller.postNewProject);
+
+router.get('/new-task', controller.getNewTask);
+router.post('/new-task', controller.postNewTask);
+
 router.get('/priority-view', controller.getPriorityView);
 router.get('/kanban-view', controller.getKanbanView);
 router.get('/table-view', controller.getTableView);
