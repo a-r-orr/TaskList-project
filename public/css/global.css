@@ -237,7 +237,8 @@ nav a:hover {
     border-radius: 5px;
 }
 
-.sidebar-projects a.current-project {
+.sidebar-projects a.current-project,
+.sidebar-views a.current-view {
     background-color: var(--tl-theme-myrtle);
     color: var(--tl-theme-white);
 }
@@ -247,7 +248,8 @@ nav a:hover {
     color: var(--tl-theme-myrtle);
 }
 
-.sidebar-projects a.current-project:hover {
+.sidebar-projects a.current-project:hover,
+.sidebar-views a.current-view:hover {
     color: var(--tl-theme-dark);
 }
 
@@ -294,14 +296,14 @@ nav a:hover {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 77px 55px 33px 55px;
+    padding: 33px 55px 33px 55px;
 }
 
 .form-title {
     display: block;
     font-size: 30px;
     color: var(--tl-theme-dark);
-    padding-bottom: 40px;
+    /* padding-bottom: 20px; */
 }
 
 .project-form, .task-form {
@@ -317,20 +319,73 @@ nav a:hover {
     margin-bottom: 30px;
 }
 
+.wrap-form-input label {
+    font-size: 18px;
+    display: block;
+    margin-bottom: -5px;
+}
+
+.form-info-text {
+    font-size: 18px;
+    display: block;
+}
+
+.custom-select {
+    position: relative;
+}
+
+.custom-select::before,
+.custom-select::after {
+  --size: 0.3rem;
+  position: absolute;
+  content: "";
+  right: 1rem;
+  pointer-events: none;
+}
+
+.custom-select::before {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-bottom: var(--size) solid var(--tl-theme-dark);
+  top: 57%;
+}
+
+.custom-select::after {
+  border-left: var(--size) solid transparent;
+  border-right: var(--size) solid transparent;
+  border-top: var(--size) solid var(--tl-theme-dark);
+  top: 72%;
+}
+
+.custom-select select{
+    appearance: none;
+    width: 100%;
+    padding: 0.675em 6em 0.675em 1em;
+    background-color: var(--tl-theme-offwhite);
+    border: 1px solid var(--tl-theme-keppel);
+    border-radius: 0.25em;
+    color: var(--tl-theme-dark);
+    cursor: pointer;
+    margin-bottom: 0.1em;
+}
+
 .form-input {
     width:100%;
     height: 45px;
+    font-size: 15px;
     display: block;
     outline: none;
     border: none;
-    color: var(--tl-theme-keppel);
+    color: var(--tl-theme-dark);
     background: transparent;
     padding: 0 5px;
 }
 
 .form-button {
     font-size: 15px;
-    width: 100%;
+    width: 80%;
+    margin-left: 10%;
+    margin-bottom: 5px;
     height: 3em;
     outline: none;
     border: none;
@@ -340,8 +395,21 @@ nav a:hover {
     color: var(--tl-theme-offwhite);
 }
 
+.delete-button {
+    background-color: var(--tl-theme-dark);
+}
+
+.complete-button {
+    background-color: var(--tl-theme-myrtle);
+}
+
 .form-button:hover {
     cursor: pointer;
+    color: var(--tl-theme-dark);
+}
+
+.delete-button:hover {
+    color: var(--tl-theme-myrtle);
 }
 
 .edit-button, .add-button {
@@ -350,6 +418,7 @@ nav a:hover {
     width: 100%;
     height: 3em;
     padding: 5px 10px;
+    margin-right: 5px;
     outline: none;
     border: none;
     border-radius: 1.5em;

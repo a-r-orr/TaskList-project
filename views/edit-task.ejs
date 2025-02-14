@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head', { title: 'Edit Task' }); %>
+</head>
+
+<body>
+    <header>
+        <%- include('./partials/navbar'); %>
+    </header>
+
+    <content>
+        <div class="form-container">
+            <div class="form-wrap tl-rounded">
+                <h3 class="form-title">Edit Task</h3>
+                <form method="post" action="/edit-task/<%= task.task_id %>" class="task-form">
+                    <% if (task.completed_date === null) { %>
+                        <div class="wrap-form-input">
+                            <label for="taskName">Task Name</label>
+                            <input type="text" name="taskName" value="<%= task.task_name %>" class="form-input">
+                        </div>
+                        <div class="wrap-form-input">
+                            <label for="taskDescription">Description</label>
+                            <input type="text" name="taskDescription" value="<%= task.description %>" class="form-input">
+                        </div>
+                        <div class="wrap-form-input custom-select">
+                            <label for="priorityID">Priority Level</label>
+                            <select name="priorityID" id="select-priority">
+                                <% priorities.forEach((priority) => { %>
+                                    <% if (priority.priority_id === task.priority_id) { %>
+                                        <option value="<%= priority.priority_id %>" selected><%= priority.priority_name %></option>
+                                    <% } else { %>
+                                        <option value="<%= priority.priority_id %>"><%= priority.priority_name %></option>
+                                    <% } %>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="wrap-form-input custom-select">
+                            <label for="compStatID">Completion Status</label>
+                            <select name="compStatID" id="select-compStat">
+                                <% compStats.forEach((compStat) => { %>
+                                    <% if (compStat.completion_status_id === task.completion_status_id) { %>
+                                        <option value="<%= compStat.completion_status_id %>" selected><%= compStat.completion_status_name %></option>
+                                    <% } else { %>
+                                        <option value="<%= compStat.completion_status_id %>"><%= compStat.completion_status_name %></option>
+                                    <% } %>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="wrap-form-input">
+                            <label for="dueDate">Due Date</label>
+                            <input type="date" name="dueDate" value="<%= task.due_date.slice(0,10) %>" class="form-input">
+                        </div>
+                        <div class="wrap-form-input">
+                            <label for="projectName">Part of this Project</label>
+                            <input type="text" name="projectName" value="<%= currentProject.project_name %>" class="form-input" readonly>
+                        </div>
+
+                        <input type="submit" value="Update Task" class="form-button">
+                        <input type="submit" value="Delete Task" class="form-button delete-button" formaction="/delete-task/<%= task.task_id %>">
+                    <% } else { %>
+                        <div class="wrap-form-input">
+                            <label for="taskName">Task Name</label>
+                            <input type="text" name="taskName" value="<%= task.task_name %>" class="form-input" readonly>
+                        </div>
+                        <div class="wrap-form-input">
+                            <label for="taskDescription">Description</label>
+                            <input type="text" name="taskDescription" value="<%= task.description %>" class="form-input" readonly>
+                        </div>
+                        <div class="wrap-form-input custom-select">
+                            <label for="priorityID">Priority Level</label>
+                            <select name="priorityID" id="select-priority">
+                                <% priorities.forEach((priority) => { %>
+                                    <% if (priority.priority_id === task.priority_id) { %>
+                                        <option value="<%= priority.priority_id %>" selected><%= priority.priority_name %></option>
+                                    <% } else { %>
+                                        <option value="<%= priority.priority_id %>" disabled><%= priority.priority_name %></option>
+                                    <% } %>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="wrap-form-input custom-select">
+                            <label for="compStatID">Completion Status</label>
+                            <select name="compStatID" id="select-compStat">
+                                <% compStats.forEach((compStat) => { %>
+                                    <% if (compStat.completion_status_id === task.completion_status_id) { %>
+                                        <option value="<%= compStat.completion_status_id %>" selected><%= compStat.completion_status_name %></option>
+                                    <% } else { %>
+                                        <option value="<%= compStat.completion_status_id %>"><%= compStat.completion_status_name %></option>
+                                    <% } %>
+                                <% }); %>
+                            </select>
+                        </div>
+                        <div class="wrap-form-input">
+                            <label for="dueDate">Due Date</label>
+                            <input type="date" name="dueDate" value="<%= task.due_date.slice(0,10) %>" class="form-input" readonly>
+                        </div>
+                        <div class="wrap-form-input">
+                            <label for="projectName">Part of this Project</label>
+                            <input type="text" name="projectName" value="<%= currentProject.project_name %>" class="form-input" readonly>
+                        </div>
+                        <p class="form-info-text">This task was completed on <%= task.pretty_completed_date %></p>
+                        <p class="form-info-text">To reactivate it, please change the Completion Status</p>
+                        <input type="submit" value="Update Task" class="form-button">
+                        <!-- <input type="submit" value="Delete Task" class="form-button delete-button" formaction="/delete-task/<%= task.task_id %>"> -->
+                    <% } %>
+                </form>
+            </div>
+        </div>
+    </content>
+</body>
+
+<script>
+    // console.log(`<%= task.task_name %>`);
+</script>
+
+</html>

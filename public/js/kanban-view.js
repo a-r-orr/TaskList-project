@@ -1,5 +1,13 @@
+let project = projectsArray.find(project => project.project_id === currentProj);
+
+let projectName = document.getElementById("project-name");
+projectName.innerHTML=project.project_name;
+
+let tableCaption = document.getElementById("table-caption");
+tableCaption.innerHTML=project.description;
+
 const socket = io();
-// console.log(newCats);
+
 let tasks = document.getElementsByClassName("task");
 let categories = document.getElementsByClassName("task-category");
 
@@ -20,19 +28,11 @@ for (task of tasks) {
 
             dragArea.addEventListener("drop", function (e) {
                 let selected_cat = parseInt(e.target.parentElement.dataset.category);
-                // console.log(newCats);
-                // console.log(selected_cat);
                 let cat = newCats.find(cat => cat.completion_status_id === selected_cat);
-                // console.log(cat);
-                //(compStatID, compStatName, projectID, taskID)
-                // console.log('completion status update', cat.completion_status_id, cat.completion_status_name, currentProjNum, selected_task.dataset.task);
-                socket.emit('completion status update', cat.completion_status_id, cat.completion_status_name, currentProjNum, selected_task.dataset.task);
+                socket.emit('completion status update', cat.completion_status_id, cat.completion_status_name, currentProj, selected_task.dataset.task);
 
                 selected_task = null;
                 selected_cat=null;
-                // setTimeout(() => {
-                //     location.reload();
-                // }, 10);
             });
         }
     });
@@ -59,6 +59,15 @@ for (task of tasks) {
         editTaskPanel.classList.remove("active");
         this.classList.remove("active");
     })
+
+    let taskTileLabels = task.getElementsByClassName("task-tile-label");
+    for (label of taskTileLabels) {
+        let labelText = label.innerHTML;
+        let priority = prioritiesArray.find(priority => priority.priority_name === labelText);
+        label.style.backgroundColor = priority.tile_colour;
+    };
+        
+    
 }
 
 function createDragArea() {

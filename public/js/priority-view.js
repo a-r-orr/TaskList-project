@@ -1,5 +1,12 @@
-const socket = io();
+let project = projectsArray.find(project => project.project_id === currentProj);
 
+let projectName = document.getElementById("project-name");
+projectName.innerHTML=project.project_name;
+
+let tableCaption = document.getElementById("table-caption");
+tableCaption.innerHTML=project.description;
+
+const socket = io();
 
 let tasks = document.getElementsByClassName("task");
 let categories = document.getElementsByClassName("task-category");
@@ -20,14 +27,12 @@ for (task of tasks) {
             dragArea.addEventListener("dragleave", handleDragLeave);
 
             dragArea.addEventListener("drop", function (e) {
-                let selected_cat = e.target.parentElement;
-                socket.emit('priority update', selected_cat.dataset.category, selected_task.dataset.task);
+                let selected_cat = parseInt(e.target.parentElement.dataset.category);
+                let cat = newCats.find(cat => cat.priority_id === selected_cat);
+                socket.emit('priority update', cat.priority_id, currentProj, selected_task.dataset.task);
 
                 selected_task = null;
                 selected_cat=null;
-                // setTimeout(() => {
-                //     location.reload();
-                // }, 10);
             });
         }
     });
@@ -54,6 +59,14 @@ for (task of tasks) {
         editTaskPanel.classList.remove("active");
         this.classList.remove("active");
     })
+
+    let taskTileLabels = task.getElementsByClassName("task-tile-label");
+    for (label of taskTileLabels) {
+        let labelText = label.innerHTML;
+        let compStat = compStatsArray.find(compStat => compStat.completion_status_name === labelText);
+        label.style.backgroundColor = compStat.tile_colour;
+    };
+
 }
 
 function createDragArea() {

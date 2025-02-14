@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head', { title: 'Edit Project' }); %>
+</head>
+
+<body>
+    <header>
+        <%- include('./partials/navbar'); %>
+    </header>
+
+    <content>
+        <div class="form-container">
+            <div class="form-wrap tl-rounded">
+                <h3 class="form-title">Edit Project</h3>
+                <form method="post" action="/edit-project/<%= project.project_id %>" class="project-form">
+                    <% if (project.completed_date === null) { %>
+
+                        <div class="wrap-form-input">
+                            <label for="projectName">Project Name</label>
+                            <input type="text" name="projectName" value="<%= project.project_name %>" class="form-input">
+                        </div>
+                        <div class="wrap-form-input">
+                            <label for="projectDescription">Project Description</label>
+                            <input type="text" name="projectDescription" value="<%= project.description %>" class="form-input">
+                        </div>
+
+                        <input type="submit" value="Update Project" class="form-button">
+                        <input type="submit" value="Mark Project Complete" class="form-button complete-button" formaction="/complete-project/<%= project.project_id %>">
+
+                    <% } else { %>
+
+                        <div class="wrap-form-input">
+                            <label for="projectName">Project Name</label>
+                            <input type="text" name="projectName" value="<%= project.project_name %>" class="form-input" disabled>
+                        </div>
+                        <div class="wrap-form-input">
+                            <label for="projectDescription">Project Description</label>
+                            <input type="text" name="projectDescription" value="<%= project.description %>" class="form-input" disabled>
+                        </div>
+                        <p class="form-info-text">This project was completed on <%= project.pretty_completed_date %></p>
+                        <!-- <input type="submit" value="Update Project" class="form-button" disabled> -->
+                        <input type="submit" value="Uncomplete Project" class="form-button complete-button" formaction="/uncomplete-project/<%= project.project_id %>">
+
+                    <% } %>
+                </form>
+            </div>
+        </div>
+    </content>
+</body>
+
+</html>

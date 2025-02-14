@@ -37,27 +37,23 @@ io.on('connection', async (socket) => {
         console.log('a user disconnected');
     });
 
-    socket.on('priority update', async (priority, task) => {
-        // console.log('priority: ' + priority);
-        // console.log('task: ' + task);
+    socket.on('priority update', async (priorityID, projectID, taskID) => {
+        const vals = { priorityID };
 
-        const project_id = 1;
-        const updatePriority = `UPDATE task SET priority_id=? WHERE task_id=? and project_id=?`;
-        // const selectTasks = `SELECT * FROM task WHERE project_id=?`;
+        const endpoint = `${process.env.API_URL}/projects/${projectID}/tasks/${taskID}/priority`;
     
         try {
-            const [ priorities, fielddata1 ] = await conn.query(updatePriority, [priority, task, project_id]);
-            //const [ tasks, fielddata2 ] = await conn.query(selectTasks, project_id);
+            const updateResponse = await axios.patch(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
             socket.emit('priority update complete');
             
         } catch (err) {
-            console.error(err);
+            console.log(`Patch priority - Error making API request: ${error}`);
+            session.errorMessage = "Sorry, something went wrong. Please try that again."
         }
 
     } )
 
     socket.on('completion status update', async (compStatID, compStatName, projectID, taskID) => {
-        
         const vals = { compStatID, compStatName };
 
         const endpoint = `${process.env.API_URL}/projects/${projectID}/tasks/${taskID}/completion`;
@@ -65,24 +61,10 @@ io.on('connection', async (socket) => {
         try {
             const updateResponse = await axios.patch(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
             socket.emit('completion status update complete');
-            // if (updateResponse.status === 201) {
-                
-            // } else {
-            //     session.projectInputVals = { 
-            //         projectName: projectName, 
-            //         projectDescription: projectDescription
-            //     };
-            //     res.redirect('/new-project');
-            // }
             
         } catch (error) {
-            console.log(`postNewProject - Error making API request: ${error}`);
+            console.log(`Patch completion status - Error making API request: ${error}`);
             session.errorMessage = "Sorry, something went wrong. Please try that again."
-            // session.projectInputVals = { 
-            //     projectName: projectName, 
-            //     projectDescription: projectDescription
-            // };
-            // res.redirect('/new-project');
         }
     } )
 });

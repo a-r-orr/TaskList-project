@@ -162,6 +162,100 @@ exports.postNewProject = async (req, res) => {
     }
 }
 
+exports.getEditProject = async (req, res) => {
+    const projectID = parseInt(req.query.project);
+    try {
+        const projectEndpoint = `${process.env.API_URL}/projects/${projectID}`;
+        const projectDetails = await axios.get(projectEndpoint, { validateStatus: (status) => { return status < 500 } });
+        // console.log(projectDetails.data.result);
+        res.render('edit-project', { project: projectDetails.data.result[0] });
+
+    } catch (err) {
+        console.log(err);
+        res.redirect('/');
+    }
+}
+
+exports.putEditProject = async (req, res) => {
+    const projectID = req.params.projectID;
+    const { projectName, projectDescription } = req.body;
+    const completionDate = null;
+    const session = req.session;
+
+    const endpoint = `${process.env.API_URL}/projects/${projectID}`;
+
+    try {
+        const vals = { projectName, projectDescription, completionDate };
+        
+        const projectResponse = await axios.put(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
+        
+        if (projectResponse.status === 201) {
+            session.projectInputVals = {};
+            res.redirect(`/table-view/?project=${projectID}`);
+        } else {
+            console.log(projectResponse);
+            res.redirect(`/table-view/?project=${projectID}`);
+        }
+        
+    } catch (error) {
+        console.log(`putEditProject - Error making API request: ${error}`);
+        session.errorMessage = "Sorry, something went wrong. Please try that again."
+        res.redirect(`/table-view/?project=${projectID}`);
+    }
+}
+
+exports.patchCompleteProject = async (req, res) => {
+    const projectID = req.params.projectID;
+    const completionDate = todaysDate();
+    const session = req.session;
+
+    try {
+        const endpoint = `${process.env.API_URL}/projects/${projectID}/completion`;
+        const vals = { completionDate };
+        
+        const projectResponse = await axios.patch(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
+        
+        if (projectResponse.status === 201) {
+            session.projectInputVals = {};
+            res.redirect(`/`);
+        } else {
+            console.log(projectResponse);
+            res.redirect(`/table-view/?project=${projectID}`);
+        }
+        
+    } catch (error) {
+        console.log(`putEditProject - Error making API request: ${error}`);
+        session.errorMessage = "Sorry, something went wrong. Please try that again."
+        res.redirect(`/table-view/?project=${projectID}`);
+    }
+}
+
+exports.patchUncompleteProject = async (req, res) => {
+    const projectID = req.params.projectID;
+    const completionDate = null;
+    const session = req.session;
+
+    try {
+        const endpoint = `${process.env.API_URL}/projects/${projectID}/completion`;
+        const vals = { completionDate };
+        
+        const projectResponse = await axios.patch(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
+        
+        if (projectResponse.status === 201) {
+            session.projectInputVals = {};
+            res.redirect(`/`);
+        } else {
+            console.log(projectResponse);
+            res.redirect(`/table-view/?project=${projectID}`);
+        }
+        
+    } catch (error) {
+        console.log(`putEditProject - Error making API request: ${error}`);
+        session.errorMessage = "Sorry, something went wrong. Please try that again."
+        res.redirect(`/table-view/?project=${projectID}`);
+    }
+}
+
 exports.getNewTask = async (req, res) => {
     const projectID = parseInt(req.query.project);
     const session = req.session;
@@ -220,18 +314,75 @@ exports.postNewTask = async (req, res) => {
     }
 }
 
+exports.getEditTask = async (req, res) => {
+    const projectID = parseInt(req.query.project);
+    const taskID = parseInt(req.query.task);
+    const session = req.session;
+    try {
+        session.userProjects = await getUsersProjects(session.userID);
+        const currentProject = session.userProjects.find(project => project.project_id === projectID);
+        session.currentProject = currentProject;
+        const taskDetails = await getSpecificTask(projectID, taskID);
+        const task = taskDetails.task;
+        const priorities = taskDetails.priorities;
+        const compStats = taskDetails.compStats;
+    
+        res.render('edit-task', { task: task, userProjects: session.userProjects, currentProject: currentProject, priorities: priorities, compStats: compStats });
+    } catch (err) {
+        console.log(err);
+        res.redirect('/');
+    }
+    
+}
+
+exports.putEditTask = async (req, res) => {
+    const taskID = req.params.taskID;
+    const { taskName, taskDescription, priorityID, compStatID, dueDate } = req.body;
+    const session = req.session;
+    const projectID = session.currentProject.project_id;
+
+    const endpoint = `${process.env.API_URL}/projects/${projectID}/tasks/${taskID}`;
+
+    try {
+        const vals = { taskName, taskDescription, priorityID, compStatID, dueDate };
+        // console.log(vals);
+        const projectResponse = await axios.put(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
+        // console.log(projectResponse);
+        if (projectResponse.status === 201) {
+            session.projectInputVals = {};
+            res.redirect(`/table-view/?project=${projectID}`);
+        } else {
+            // session.projectInputVals = { 
+            //     projectName: projectName, 
+            //     projectDescription: projectDescription
+            // };
+            console.log(projectResponse);
+            res.redirect('/');
+        }
+        
+    } catch (error) {
+        console.log(`putEditTask - Error making API request: ${error}`);
+        session.errorMessage = "Sorry, something went wrong. Please try that again."
+        // session.projectInputVals = { 
+        //     projectName: projectName, 
+        //     projectDescription: projectDescription
+        // };
+        res.redirect('/');
+    }
+}
+
 exports.getTableView = async (req, res) => {
     const projectID = req.query.project;
     const session = req.session;
-    session.userProjects = await getUsersProjects(session.userID);
-    // console.log(`User's projects: ${userProjects}`);
 
     try {
-        // const [ categories, fielddata1 ] = await conn.query(selectCategories, project_id);
+        session.userProjects = await getUsersProjects(session.userID);
         const tasksObject = await getProjectTasks(projectID);
         const tasks = tasksObject.tasks;
+        const compStats = tasksObject.compStats;
+        const priorities = tasksObject.priorities;
         
-        res.render('table-view', { tasks: tasks, userProjects: session.userProjects, currentProject: projectID });
+        res.render('table-view', { tasks: tasks, userProjects: session.userProjects, currentProject: projectID, compStats: compStats, priorities: priorities });
         
     } catch (err) {
         console.error(err);
@@ -241,48 +392,42 @@ exports.getTableView = async (req, res) => {
 exports.getKanbanView = async (req, res) => {
     const projectID = req.query.project;
     const session = req.session;
-    session.userProjects = await getUsersProjects(session.userID);
-
+    
     try {
+        session.userProjects = await getUsersProjects(session.userID);
         const tasksObject = await getProjectTasks(projectID);
         const tasks = tasksObject.tasks;
         const categories = tasksObject.compStats;
+        const priorities = tasksObject.priorities;
         
-        res.render('kanban-view', { tasks: tasks, categories: categories, userProjects: session.userProjects, currentProject: projectID });
+        res.render('kanban-view', { tasks: tasks, categories: categories, userProjects: session.userProjects, currentProject: projectID, priorities: priorities });
         
     } catch (err) {
         console.error(err);
     }
-
 }
 
 exports.getPriorityView = async (req, res) => {
-    const project_id = 1;
+    const projectID = req.query.project;
+    const session = req.session;
     
-    const selectCategories = `SELECT DISTINCT priority_id as category_id,
-                                             priority_name as category_name,
-                                             tile_colour FROM priority WHERE project_id=?`;
-
-    const selectTasks = `SELECT task_id, task_name, description, priority_id as category_id, 
-                        completion_status_id, created_date, due_date, completed_date
-                        FROM task WHERE project_id=?`;
-    
-    const { userID } = req.session;
-    const userProjects = await getUsersProjects(userID);
-    // console.log(`User's projects: ${userProjects}`);
-
     try {
-        const [ categories, fielddata1 ] = await conn.query(selectCategories, project_id);
-        const [ tasks, fielddata2 ] = await conn.query(selectTasks, project_id);
+        session.userProjects = await getUsersProjects(session.userID);
+        const tasksObject = await getProjectTasks(projectID);
+        const tasks = tasksObject.tasks;
+        const categories = tasksObject.priorities;
+        const compStats = tasksObject.compStats;
         
-        res.render('priority-view', { tasks: tasks, categories: categories, userProjects: userProjects });
-        // res.render('priority-view', { tasks: tasks, priorities: priorities, userProjects: userProjects });
+        res.render('priority-view', { tasks: tasks, categories: categories, userProjects: session.userProjects, currentProject: projectID, compStats: compStats });
         
     } catch (err) {
         console.error(err);
     }
-
 }
+
+// async function updateProject(projectID, vals) {
+//     return 0;
+// }
 
 async function getUsersProjects(userID) {
     
@@ -314,6 +459,30 @@ async function getProjectTasks(projectID) {
     } catch (err) {
         console.log(err);
         return [];
+    }
+}
+
+async function getSpecificTask(projectID, taskID) {
+    try {
+        const projectTasks = await getProjectTasks(projectID);
+        
+        const currentTask = projectTasks.tasks.find(task => task.task_id === taskID);
+        const priorities = projectTasks.priorities;
+        const compStats = projectTasks.compStats;
+        console.log(currentTask);
+
+        if (currentTask && priorities && compStats) {
+            return {
+                task: currentTask,
+                priorities: priorities,
+                compStats: compStats
+            }
+        } else {
+            return {};
+        }
+    } catch (err) {
+        console.log(err);
+        return {};
     }
 }
 
