@@ -303,6 +303,7 @@ nav a:hover {
     display: block;
     font-size: 30px;
     color: var(--tl-theme-dark);
+    text-align: center;
     /* padding-bottom: 20px; */
 }
 
@@ -328,6 +329,7 @@ nav a:hover {
 .form-info-text {
     font-size: 18px;
     display: block;
+    text-align: center;
 }
 
 .custom-select {
@@ -422,7 +424,7 @@ nav a:hover {
     outline: none;
     border: none;
     border-radius: 1.5em;
-    font-weight: 600;
+    font-weight: 500;
     color: var(--tl-theme-offwhite);
 }
 
@@ -440,6 +442,21 @@ nav a:hover {
 
 .add-button:hover {
     color: var(--tl-theme-myrtle);
+}
+
+.dashboard-charts {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 1100px;
+}
+
+.dashboard-charts canvas {
+    border: 2px solid var(--tl-theme-keppel);
+    border-radius: 15px;
+    margin: 10px;
+    width: 350px;
 }
 
 /* Some utility styling classes */

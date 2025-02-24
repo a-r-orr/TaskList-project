@@ -10,6 +10,8 @@ const path = require('path');
 const sessions = require('express-session');
 const axios = require('axios');
 
+// const { checkLogin } = require('./middleware/mymiddleware');
+
 const app = express();
 const server = createServer(app);
 const io = new Server(server, {
@@ -28,6 +30,8 @@ app.use(sessions({
     resave: false,
     saveUninitialized: false
 }));
+
+// app.use('/', checkLogin);
 app.use('/', router);
 app.set('view engine', 'ejs');
 

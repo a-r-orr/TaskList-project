@@ -6,9 +6,40 @@ const project_id = 1;
 
 exports.getRoot = async (req, res) => {
     const session = req.session;
+    /*
+    // Temporary Code for dev
+    session.isLoggedIn = true;
+    session.userID = 3;
+    session.userDetails = {
+        "username": "AndyO",
+        "display_name": "Andy",
+        "role": "user"
+    }
+    //--------
+    */
+    
     if (session.isLoggedIn) {
         session.userProjects = await getUsersProjects(session.userID);
-        res.render('dashboard', { userDetails: session.userDetails, userProjects: session.userProjects });
+        let userTasks = [];
+        let userPriorities = [];
+        let userCompStats = [];
+        for (project of session.userProjects) {
+            let projectTasks = await getProjectTasks(project.project_id);
+            let projectTaskList = projectTasks.tasks;
+            for (task of projectTaskList) {
+                userTasks.push(task);
+            }
+            let projectPriorityList = projectTasks.priorities;
+            for (priority of projectPriorityList) {
+                userPriorities.push(priority);
+            }
+            let projectCompStatList = projectTasks.compStats;
+            for (compStat of projectCompStatList) {
+                userCompStats.push(compStat);
+            }
+        }
+        // console.log(userTasks);
+        res.render('dashboard', { userDetails: session.userDetails, userProjects: session.userProjects, userTasks: userTasks, priorities: userPriorities, compStats: userCompStats });
     } else {
         res.render('landing');
     }
@@ -101,13 +132,19 @@ exports.postLogin = async (req, res) => {
             }
             if (userProjects.result) {
                 session.userProjects = userProjects.result;
+                session.userProjectIDs = userProjects.result.map((item) => {return item.project_id});
             } else {
                 session.userProjects = [];
+                session.userProjectIDs = [];
             }
             
         });
-
-        res.redirect('/');
+        if (session.returnUrl !== undefined) {
+            res.redirect(session.returnUrl);
+        } else {
+            res.redirect('/');
+        }
+        
 
     } catch (error) {
         console.log(`postLogin - Error making API request: ${error}`);
@@ -142,7 +179,8 @@ exports.postNewProject = async (req, res) => {
         const projectResponse = await axios.post(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
         if (projectResponse.status === 201) {
             session.projectInputVals = {};
-            res.redirect('/');
+            const projectID = projectResponse.data.result.projectID;
+            res.redirect(`/overview/?project=${projectID}`);
         } else {
             session.projectInputVals = { 
                 projectName: projectName, 
@@ -164,6 +202,10 @@ exports.postNewProject = async (req, res) => {
 
 exports.getEditProject = async (req, res) => {
     const projectID = parseInt(req.query.project);
+    const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`getEditProject: ${returnUrl}`);
+
     try {
         const projectEndpoint = `${process.env.API_URL}/projects/${projectID}`;
         const projectDetails = await axios.get(projectEndpoint, { validateStatus: (status) => { return status < 500 } });
@@ -172,7 +214,7 @@ exports.getEditProject = async (req, res) => {
 
     } catch (err) {
         console.log(err);
-        res.redirect('/');
+        res.redirect(returnUrl);
     }
 }
 
@@ -181,6 +223,8 @@ exports.putEditProject = async (req, res) => {
     const { projectName, projectDescription } = req.body;
     const completionDate = null;
     const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`putEditProject: ${returnUrl}`);
 
     const endpoint = `${process.env.API_URL}/projects/${projectID}`;
 
@@ -191,16 +235,16 @@ exports.putEditProject = async (req, res) => {
         
         if (projectResponse.status === 201) {
             session.projectInputVals = {};
-            res.redirect(`/table-view/?project=${projectID}`);
+            res.redirect(returnUrl);
         } else {
             console.log(projectResponse);
-            res.redirect(`/table-view/?project=${projectID}`);
+            res.redirect(returnUrl);
         }
         
     } catch (error) {
         console.log(`putEditProject - Error making API request: ${error}`);
         session.errorMessage = "Sorry, something went wrong. Please try that again."
-        res.redirect(`/table-view/?project=${projectID}`);
+        res.redirect(returnUrl);
     }
 }
 
@@ -208,6 +252,8 @@ exports.patchCompleteProject = async (req, res) => {
     const projectID = req.params.projectID;
     const completionDate = todaysDate();
     const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`patchCompleteProject: ${returnUrl}`);
 
     try {
         const endpoint = `${process.env.API_URL}/projects/${projectID}/completion`;
@@ -217,16 +263,16 @@ exports.patchCompleteProject = async (req, res) => {
         
         if (projectResponse.status === 201) {
             session.projectInputVals = {};
-            res.redirect(`/`);
+            res.redirect(returnUrl);
         } else {
             console.log(projectResponse);
-            res.redirect(`/table-view/?project=${projectID}`);
+            res.redirect(returnUrl);
         }
         
     } catch (error) {
         console.log(`putEditProject - Error making API request: ${error}`);
         session.errorMessage = "Sorry, something went wrong. Please try that again."
-        res.redirect(`/table-view/?project=${projectID}`);
+        res.redirect(returnUrl);
     }
 }
 
@@ -234,6 +280,8 @@ exports.patchUncompleteProject = async (req, res) => {
     const projectID = req.params.projectID;
     const completionDate = null;
     const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`patchUncompleteProject: ${returnUrl}`);
 
     try {
         const endpoint = `${process.env.API_URL}/projects/${projectID}/completion`;
@@ -243,22 +291,25 @@ exports.patchUncompleteProject = async (req, res) => {
         
         if (projectResponse.status === 201) {
             session.projectInputVals = {};
-            res.redirect(`/`);
+            res.redirect(returnUrl);
         } else {
             console.log(projectResponse);
-            res.redirect(`/table-view/?project=${projectID}`);
+            res.redirect(returnUrl);
         }
         
     } catch (error) {
         console.log(`putEditProject - Error making API request: ${error}`);
         session.errorMessage = "Sorry, something went wrong. Please try that again."
-        res.redirect(`/table-view/?project=${projectID}`);
+        res.redirect(returnUrl);
     }
 }
 
 exports.getNewTask = async (req, res) => {
     const projectID = parseInt(req.query.project);
     const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`getNewTask: ${returnUrl}`);
+
     try {
         session.userProjects = await getUsersProjects(session.userID);
         const currentProject = session.userProjects.find(project => project.project_id === projectID);
@@ -269,7 +320,7 @@ exports.getNewTask = async (req, res) => {
         res.render('new-task', { tomorrow: tomorrowsDate(), userProjects: session.userProjects, currentProject: currentProject, priorities: priorities });
     } catch (err) {
         console.log(err);
-        res.redirect('/');
+        res.redirect(returnUrl);
     }
     
 }
@@ -277,6 +328,9 @@ exports.getNewTask = async (req, res) => {
 exports.postNewTask = async (req, res) => {
     const { taskName, taskDescription, priorityID, dueDate } = req.body;
     const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`postNewTask: ${returnUrl}`);
+
     // const currentProject = session.userProjects.find(project => project.project_name === projectName);
     const projectID = session.currentProject.project_id;
     // console.log({ taskName, taskDescription, priorityID, dueDate, projectID });
@@ -293,14 +347,14 @@ exports.postNewTask = async (req, res) => {
         const projectResponse = await axios.post(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
         if (projectResponse.status === 201) {
             session.projectInputVals = {};
-            res.redirect(`/table-view/?project=${projectID}`);
+            res.redirect(returnUrl);
         } else {
             // session.projectInputVals = { 
             //     projectName: projectName, 
             //     projectDescription: projectDescription
             // };
             console.log(projectResponse);
-            res.redirect('/');
+            res.redirect(returnUrl);
         }
         
     } catch (error) {
@@ -310,7 +364,7 @@ exports.postNewTask = async (req, res) => {
         //     projectName: projectName, 
         //     projectDescription: projectDescription
         // };
-        res.redirect('/');
+        res.redirect(returnUrl);
     }
 }
 
@@ -318,6 +372,9 @@ exports.getEditTask = async (req, res) => {
     const projectID = parseInt(req.query.project);
     const taskID = parseInt(req.query.task);
     const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`getEditTask: ${returnUrl}`);
+
     try {
         session.userProjects = await getUsersProjects(session.userID);
         const currentProject = session.userProjects.find(project => project.project_id === projectID);
@@ -330,7 +387,7 @@ exports.getEditTask = async (req, res) => {
         res.render('edit-task', { task: task, userProjects: session.userProjects, currentProject: currentProject, priorities: priorities, compStats: compStats });
     } catch (err) {
         console.log(err);
-        res.redirect('/');
+        res.redirect(returnUrl);
     }
     
 }
@@ -339,6 +396,9 @@ exports.putEditTask = async (req, res) => {
     const taskID = req.params.taskID;
     const { taskName, taskDescription, priorityID, compStatID, dueDate } = req.body;
     const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`putEditTask: ${returnUrl}`);
+
     const projectID = session.currentProject.project_id;
 
     const endpoint = `${process.env.API_URL}/projects/${projectID}/tasks/${taskID}`;
@@ -350,14 +410,14 @@ exports.putEditTask = async (req, res) => {
         // console.log(projectResponse);
         if (projectResponse.status === 201) {
             session.projectInputVals = {};
-            res.redirect(`/table-view/?project=${projectID}`);
+            res.redirect(returnUrl);
         } else {
             // session.projectInputVals = { 
             //     projectName: projectName, 
             //     projectDescription: projectDescription
             // };
             console.log(projectResponse);
-            res.redirect('/');
+            res.redirect(returnUrl);
         }
         
     } catch (error) {
@@ -367,13 +427,97 @@ exports.putEditTask = async (req, res) => {
         //     projectName: projectName, 
         //     projectDescription: projectDescription
         // };
-        res.redirect('/');
+        res.redirect(returnUrl);
     }
+}
+
+exports.patchTaskUncomplete = async (req, res) => {
+    const taskID = req.params.taskID;
+    const compStatID = parseInt(req.body.compStatID);
+    const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`patchTaskUncomplete: ${returnUrl}`);
+
+    const projectID = session.currentProject.project_id;
+    const endpoint = `${process.env.API_URL}/projects/${projectID}/tasks/${taskID}/completion`;
+
+    try {
+        const projDetails = await getProjectTasks(projectID);
+        // console.log(projDetails);
+        const compStats = projDetails.compStats;
+        console.log(compStats);
+        console.log(compStatID);
+        const compStat = compStats.find(compStatus => compStatus.completion_status_id === compStatID);
+        console.log(compStat);
+        const compStatName = compStat.completion_status_name;
+
+        const vals = { compStatID, compStatName };
+
+        const updateResponse = await axios.patch(endpoint, vals, { validateStatus: (status) => { return status < 500 } });
+        // socket.emit('completion status update complete');
+        res.redirect(returnUrl);
+        
+    } catch (error) {
+        console.log(`patchTaskUncomplete - Error making API request: ${error}`);
+        session.errorMessage = "Sorry, something went wrong. Please try that again."
+
+        res.redirect(returnUrl);
+    }
+}
+
+exports.deleteTask = async (req, res) => {
+    const taskID = req.params.taskID;
+    const { projectID } = req.body;
+    const session = req.session;
+    const returnUrl = session.returnUrl
+    console.log(`deleteTask: ${returnUrl}`);
+
+    const endpoint = `${process.env.API_URL}/projects/${projectID}/tasks/${taskID}`;
+
+    try {
+        const taskResponse = await axios.delete(endpoint, { validateStatus: (status) => { return status < 500 } });
+        console.log(taskResponse);
+        if (taskResponse.status === 200) {
+            session.projectInputVals = {};
+            res.redirect(returnUrl);
+        } else {
+            // console.log(taskResponse);
+            res.redirect(returnUrl);
+        }
+        
+    } catch (error) {
+        console.log(`deleteTask - Error making API request: ${error}`);
+        session.errorMessage = "Sorry, something went wrong. Please try that again."
+        res.redirect(returnUrl);
+    }
+}
+
+exports.getProjectOverview = async (req, res) => {
+    const projectID = req.query.project;
+    const session = req.session;
+    session.returnUrl = req.originalUrl;
+    // console.log(session.returnUrl);
+
+    try {
+        // await updateSession(session);
+        const tasksObject = await getProjectTasks(projectID);
+        const userTasks = tasksObject.tasks;
+        const compStats = tasksObject.compStats;
+        const priorities = tasksObject.priorities;
+        
+        //res.render('table-view', { tasks: tasks, userProjects: session.userProjects, currentProject: projectID, compStats: compStats, priorities: priorities });
+        res.render('project-overview', { userProjects: session.userProjects, currentProject: projectID, userTasks: userTasks, priorities: priorities, compStats: compStats });
+    } catch (err) {
+        console.error(err);
+    }
+
+    
 }
 
 exports.getTableView = async (req, res) => {
     const projectID = req.query.project;
     const session = req.session;
+    session.returnUrl = req.originalUrl;
 
     try {
         session.userProjects = await getUsersProjects(session.userID);
@@ -392,6 +536,7 @@ exports.getTableView = async (req, res) => {
 exports.getKanbanView = async (req, res) => {
     const projectID = req.query.project;
     const session = req.session;
+    session.returnUrl = req.originalUrl;
     
     try {
         session.userProjects = await getUsersProjects(session.userID);
@@ -410,6 +555,7 @@ exports.getKanbanView = async (req, res) => {
 exports.getPriorityView = async (req, res) => {
     const projectID = req.query.project;
     const session = req.session;
+    session.returnUrl = req.originalUrl;
     
     try {
         session.userProjects = await getUsersProjects(session.userID);
@@ -425,9 +571,9 @@ exports.getPriorityView = async (req, res) => {
     }
 }
 
-// async function updateProject(projectID, vals) {
-//     return 0;
-// }
+exports.get404Page = async (req, res) => {
+    res.render('404-page');
+}
 
 async function getUsersProjects(userID) {
     
@@ -469,7 +615,7 @@ async function getSpecificTask(projectID, taskID) {
         const currentTask = projectTasks.tasks.find(task => task.task_id === taskID);
         const priorities = projectTasks.priorities;
         const compStats = projectTasks.compStats;
-        console.log(currentTask);
+        // console.log(currentTask);
 
         if (currentTask && priorities && compStats) {
             return {
@@ -484,6 +630,21 @@ async function getSpecificTask(projectID, taskID) {
         console.log(err);
         return {};
     }
+}
+
+exports.updateSession = async (session) => {
+    session.userProjects = await getUsersProjects(session.userID);
+    session.userProjectIDs = session.userProjects.map((item) => {return item.project_id});
+    let tasks = [];
+    let taskIDs = [];
+    for (ID of session.userProjectIDs) {
+        tasks = await getProjectTasks(ID);
+        for (task of tasks.tasks) {
+            taskIDs.push(task.task_id);
+        }
+    }
+    session.userTaskIDs = taskIDs;
+    // console.log(session);
 }
 
 function todaysDate() {

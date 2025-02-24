@@ -42,23 +42,14 @@
                                         <p class="task-text">
                                             <%= task.description %>
                                         </p>
+
+                                        <a class="edit-task-button active" href="/edit-task/?project=<%= currentProject %>&task=<%= task.task_id %>">Edit</a>
+                                        
                                         <button class="task-toggle">
                                             <i class='bx bx-chevron-down'></i>
                                             <i class='bx bx-x' ></i>
                                         </button>
-                                        <a class="edit-task-button active" href="/edit-task/?project=<%= currentProject %>&task=<%= task.task_id %>">Edit</a>
-                                        <button class="close-edit-task-button">Hide edit</button>
             
-                                        <div class="edit-task-panel">
-                                            <form class="edit-task-form" action="post">
-                                                <input type="text" value="<%= task.task_name %>">
-                                                <input type="text" value="<%= task.description %>">
-            
-                                                <button>Submit</button>
-                                            </form>
-            
-                                            <!-- <button class="modal-close">Close Modal</button> -->
-                                        </div>
                                     </div>
                                     
                                 <% } %>

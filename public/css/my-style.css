@@ -47,7 +47,7 @@
     position: relative;
 }
 
-@media (min-width: 800px) {
+@media (min-width: 1000px) {
     .task-categories {
         flex-direction: row;
     }
@@ -82,7 +82,7 @@
 
 .task-text {
     text-align: left;
-    margin: 2em 3em 0 1em;
+    margin: 0.5em 3em 0.5em 1em;
     display: none;
 }
 
@@ -154,102 +154,33 @@ i {
     cursor: grab;
 }
 
-.edit-task-button, .close-edit-task-button {
-    background-color: var(--tl-theme-myrtle);
-    /* color: var(--tl-theme-dark); */
-    display: none;
-    /* height: 36px; */
-    width: 100px;
-    margin: 0.5em 3em 0.5em 1em;
-    /* padding: 10px; */
-    border: transparent;
-    /* border-radius: 18px; */
-    cursor: pointer;
+@media (max-width: 1000px) {
+    .task-drag {
+        display: none;
+    }
+}
 
+.edit-task-button {
+    background-color: var(--tl-theme-myrtle);
+    display: none;
+    width: 100px;
+    height: 1.8em;
+    margin: 0.5em 3em 0.5em 1em;
+    padding: 0.3em;
+    border: transparent;
+    border-radius: 1em;
+    cursor: pointer;
     text-decoration: none;
     font-size: 1.1em;
-    /* width: 100%; */
-    height: 1.8em;
-    padding: 0.3em;
-    /* margin-right: 5px; */
-    /* outline: none; */
-    /* border: none; */
-    border-radius: 1em;
-    font-weight: 600;
+    font-weight: 500;
     text-align: center;
-    
     color: var(--tl-theme-offwhite);
 }
 
-.task.active .edit-task-button.active,
-.task.active .close-edit-task-button.active {
+.task.active .edit-task-button {
     display: block;
 }
 
-.edit-task-panel {
-    display: none; /* Hidden by default */
-    background-color: var(--tl-theme-dragarea);
-    margin: 0.2em 1em 0 1em;
-    padding: 1.5em;
-    border: transparent;
-    border-radius: 5px 5px 5px 5px;
+.edit-task-button:hover {
+    color: var(--tl-theme-dark);
 }
-
-.task.active .edit-task-panel.active {
-    display: block;
-}
-
-.edit-task-form {
-    display: flex;
-    flex-direction: column;
-}
-
-/* .task-table {
-    width: 90%;
-} */
-
-/* 
-table {
-    width:100%;
-    border-collapse: collapse;
-}
-
-
-th,
-td {
-    padding: 1rem;
-}
-
-caption,
-th {
-    text-align: left;
-}
-
-tr:nth-of-type(2n) {
-    background: hsl(176.9 50.2% 45.7% / 0.2);
-}
-
-@media (max-width: 650px) {
-    th {
-        display: none;
-    }
-
-    td {
-        display: grid;
-        grid-template-columns: 15ch auto;
-        padding: 0.5rem 1rem;
-    }
-
-    td:first-child {
-        padding-top: 2rem;
-    }
-    td:last-child {
-        padding-bottom: 2rem;
-    }
-
-    td::before {
-        content: attr(data-cell) ": ";
-        font-weight: 700;
-        text-transform: capitalize;
-    }
-} */

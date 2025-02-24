@@ -45,21 +45,6 @@ for (task of tasks) {
         }
     });
 
-    let editTaskButton = task.getElementsByClassName("edit-task-button")[0];
-    let closeEditTaskButton = task.getElementsByClassName("close-edit-task-button")[0];
-    let editTaskPanel = task.getElementsByClassName("edit-task-panel")[0];
-
-    editTaskButton.addEventListener("click", function (e) {
-        editTaskPanel.classList.add("active");
-        closeEditTaskButton.classList.add("active");
-        this.classList.remove("active");
-    })
-    closeEditTaskButton.addEventListener("click", function (e) {
-        editTaskButton.classList.add("active");
-        editTaskPanel.classList.remove("active");
-        this.classList.remove("active");
-    })
-
     let taskTileLabels = task.getElementsByClassName("task-tile-label");
     for (label of taskTileLabels) {
         let labelText = label.innerHTML;

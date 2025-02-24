@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <%- include('./partials/head', { title: 'New Project' }); %>
+</head>
+
+<body>
+    <header>
+        <%- include('./partials/navbar'); %>
+    </header>
+
+    <content>
+        <div class="form-container">
+            <div class="form-wrap tl-rounded">
+                <h3 class="form-title">Oops - we can't access that for you...</h3>
+                <p class="form-info-text">It looks like you've tried to access something that either doesn't exist or doesn't belong to you...</p>
+                <form method="get" action="/" class="project-form">
+                    <button class="form-button">Return to Dashboard</button>
+                </form>
+            </div>
+        </div>
+    </content>
+</body>
+
+</html>

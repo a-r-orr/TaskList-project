@@ -57,8 +57,13 @@
                             <input type="text" name="projectName" value="<%= currentProject.project_name %>" class="form-input" readonly>
                         </div>
 
+                        <div class="wrap-form-input" style="display: none;">
+                            <label for="projectID">Project ID</label>
+                            <input type="text" name="projectID" value="<%= currentProject.project_id %>" class="form-input" readonly>
+                        </div>
+
                         <input type="submit" value="Update Task" class="form-button">
-                        <input type="submit" value="Delete Task" class="form-button delete-button" formaction="/delete-task/<%= task.task_id %>">
+                        <input type="submit" value="Delete Task" class="form-button delete-button" onClick="return confirmDelete()" formaction="/delete-task/<%= task.task_id %>">
                     <% } else { %>
                         <div class="wrap-form-input">
                             <label for="taskName">Task Name</label>
@@ -102,7 +107,7 @@
                         </div>
                         <p class="form-info-text">This task was completed on <%= task.pretty_completed_date %></p>
                         <p class="form-info-text">To reactivate it, please change the Completion Status</p>
-                        <input type="submit" value="Update Task" class="form-button">
+                        <input type="submit" value="Update Task" class="form-button" formaction="/uncomplete-task/<%= task.task_id %>">
                         <!-- <input type="submit" value="Delete Task" class="form-button delete-button" formaction="/delete-task/<%= task.task_id %>"> -->
                     <% } %>
                 </form>
@@ -112,7 +117,14 @@
 </body>
 
 <script>
-    // console.log(`<%= task.task_name %>`);
+    function confirmDelete() {
+        var agree = confirm("Are you sure you want to delete this task? This cannot be undone.")
+        if (agree) {
+            return true;
+        } else {
+            return false;
+        }
+    };
 </script>
 
 </html>
