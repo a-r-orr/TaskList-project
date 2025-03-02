@@ -3,8 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "start": "nodemon app.js",
-    "buildTailwind": "tailwindcss -i ./src/input.css -o ./public/style.css --watch"
+    "start": "nodemon app.js"
   },
   "keywords": [],
   "author": "",

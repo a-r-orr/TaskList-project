@@ -2,9 +2,9 @@ const express = require('express');
 const { createServer } = require('node:http');
 const { Server } = require('socket.io');
 const morgan = require('morgan');
-const events = require('events');
-const eventEmitter = new events.EventEmitter();
-const dotenv = require('dotenv').config({ path: './config.env' });
+// const events = require('events');
+// const eventEmitter = new events.EventEmitter();
+// const dotenv = require('dotenv').config({ path: './config.env' });
 const router = require('./routes/tasklistRoutes');
 const path = require('path');
 const sessions = require('express-session');
@@ -18,8 +18,7 @@ const io = new Server(server, {
     connectionStateRecovery: {}
 });
 
-const conn = require('./utils/dbconn');
-const controller = require('./controllers/tasklistControllers');
+// const controller = require('./controllers/tasklistControllers');
 
 app.use(morgan('tiny'));
 app.use(express.static(path.join(__dirname, '/public')));

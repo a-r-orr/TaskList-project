@@ -14,16 +14,18 @@
         <div class="form-container">
             <div class="form-wrap tl-rounded">
                 <h3 class="form-title">Edit Task</h3>
-                <form method="post" action="/edit-task/<%= task.task_id %>" class="task-form">
+                <form method="post" action="/edit-task/<%= task.task_id %>" class="task-form" id="task-form">
                     <% if (task.completed_date === null) { %>
                         <div class="wrap-form-input">
                             <label for="taskName">Task Name</label>
-                            <input type="text" name="taskName" value="<%= task.task_name %>" class="form-input">
+                            <input type="text" name="taskName" id="task-name" value="<%= task.task_name %>" class="form-input">
                         </div>
+                        <p class="form-advice" id="name-advice"></p>
                         <div class="wrap-form-input">
                             <label for="taskDescription">Description</label>
-                            <input type="text" name="taskDescription" value="<%= task.description %>" class="form-input">
+                            <input type="text" name="taskDescription" id="task-desc" value="<%= task.description %>" class="form-input">
                         </div>
+                        <p class="form-advice" id="desc-advice"></p>
                         <div class="wrap-form-input custom-select">
                             <label for="priorityID">Priority Level</label>
                             <select name="priorityID" id="select-priority">
@@ -50,8 +52,9 @@
                         </div>
                         <div class="wrap-form-input">
                             <label for="dueDate">Due Date</label>
-                            <input type="date" name="dueDate" value="<%= task.due_date.slice(0,10) %>" class="form-input">
+                            <input type="date" name="dueDate" id="date" value="<%= task.due_date.slice(0,10) %>" class="form-input">
                         </div>
+                        <p class="form-advice" id="date-advice"></p>
                         <div class="wrap-form-input">
                             <label for="projectName">Part of this Project</label>
                             <input type="text" name="projectName" value="<%= currentProject.project_name %>" class="form-input" readonly>
@@ -114,6 +117,57 @@
             </div>
         </div>
     </content>
+
+    <script>
+        const form = document.getElementById('task-form');
+    
+        form.addEventListener('submit', function (event) {
+        //     console.log('submitted');
+            event.preventDefault();
+    
+            const name = document.getElementById('task-name').value;
+            const nameAdvice = document.getElementById('name-advice');
+            const description = document.getElementById('task-desc').value;
+            const descriptionAdvice = document.getElementById('desc-advice');
+            const date = document.getElementById('date').value;
+            const dateAdvice = document.getElementById('date-advice');
+            
+            const nameRegex = /.*\S.*/;
+            const nameError = 'Task Name must not be empty';
+            const descRegex = /.*\S.*/;
+            const descError = 'Task Description must not be empty';
+            const dateRegex = /(19|20)\d\d-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])/g;
+            const dateError = 'Please select a valid date';
+            
+            let errorFlag = 0;
+    
+            if (nameRegex.test(name) === false) {
+                nameAdvice.innerHTML = nameError;
+                errorFlag = 1;
+            } else {
+                nameAdvice.innerHTML = '';
+            }
+    
+            if (descRegex.test(description) === false) {
+                descriptionAdvice.innerHTML = descError;
+                errorFlag = 1;
+            } else {
+                descriptionAdvice.innerHTML = '';
+            }
+
+            if (dateRegex.test(date) === false) {
+                dateAdvice.innerHTML = dateError;
+                errorFlag = 1;
+            } else {
+                dateAdvice.innerHTML = '';
+            }
+    
+            if (errorFlag === 0) {
+                this.submit();
+            }
+        });
+    </script>
+    
 </body>
 
 <script>

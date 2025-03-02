@@ -3,7 +3,12 @@
 
 <head>
     <%- include('./partials/head', { title: 'Table View' }); %>
+    <!-- DataTables CSS -->
     <link rel="stylesheet" href="/css/dataTables.css">
+    <!-- DataTables Responsive CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/responsive/3.0.4/css/responsive.dataTables.min.css">
+    <!-- DataTables SearchPanes CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/searchpanes/2.3.3/css/searchPanes.dataTables.min.css">
 </head>
 
 <body>
@@ -38,7 +43,7 @@
                             <td role="cell" data-cell="priority"><%= task.priority_name %></td>
                             <td role="cell" data-cell="completion"><%= task.completion_status_name %></td>
                             <td role="cell" data-cell="due-date"><%= task.prettyDueDate %></td>
-                            <td role="cell"><a href="/edit-task/?project=<%= currentProject %>&task=<%= task.task_id %>" class="edit-button">Edit Task</a></td>
+                            <td role="cell"><a href="/edit-task/?project=<%= currentProject %>&task=<%= task.task_id %>" class="edit-button">Edit</a></td>
                             
                         </tr>
                     <% }); %>
@@ -53,6 +58,8 @@
     <script src="/jquery/jquery-3.7.1.min.js"></script>
     <!-- DataTables -->
     <script src="/js/dataTables.js"></script>
+    <script src="https://cdn.datatables.net/responsive/3.0.4/js/dataTables.responsive.min.js"></script>
+    <script src="https://cdn.datatables.net/searchpanes/2.3.3/js/dataTables.searchPanes.min.js"></script>
     <script>
         const JSONprojects = `<%- JSON.stringify(userProjects) %>`;
         const projectsArray = JSON.parse(JSONprojects);

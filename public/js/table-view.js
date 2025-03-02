@@ -14,6 +14,7 @@ $(document).ready( function () {
 
 $(document).ready( function () {
     $('#task-table').DataTable({
+        responsive: true,
         columns: [null
                 , null
                 , null
@@ -42,6 +43,18 @@ $(document).ready( function () {
                     //     $(row).find('td').css('color', '#888');
                     // }
                 }
+            },
+            {
+                "responsivePriority": 1,
+                "targets": [0, 5]
+            },
+            {
+                "responsivePriority": 2,
+                "targets": [4]
+            },
+            {
+                "responsivePriority": 3,
+                "targets": [1, 2, 3]
             }
         ],
         createdRow: (row, data) => {

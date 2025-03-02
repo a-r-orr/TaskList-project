@@ -1,4 +1,3 @@
-const conn = require('./../utils/dbconn');
 const bcrypt = require('bcrypt');
 const axios = require('axios');
 
@@ -6,17 +5,6 @@ const project_id = 1;
 
 exports.getRoot = async (req, res) => {
     const session = req.session;
-    /*
-    // Temporary Code for dev
-    session.isLoggedIn = true;
-    session.userID = 3;
-    session.userDetails = {
-        "username": "AndyO",
-        "display_name": "Andy",
-        "role": "user"
-    }
-    //--------
-    */
     
     if (session.isLoggedIn) {
         session.userProjects = await getUsersProjects(session.userID);
@@ -311,7 +299,7 @@ exports.getNewTask = async (req, res) => {
     console.log(`getNewTask: ${returnUrl}`);
 
     try {
-        session.userProjects = await getUsersProjects(session.userID);
+        // session.userProjects = await getUsersProjects(session.userID);
         const currentProject = session.userProjects.find(project => project.project_id === projectID);
         session.currentProject = currentProject;
         const tasks = await getProjectTasks(projectID);
@@ -376,7 +364,7 @@ exports.getEditTask = async (req, res) => {
     console.log(`getEditTask: ${returnUrl}`);
 
     try {
-        session.userProjects = await getUsersProjects(session.userID);
+        // session.userProjects = await getUsersProjects(session.userID);
         const currentProject = session.userProjects.find(project => project.project_id === projectID);
         session.currentProject = currentProject;
         const taskDetails = await getSpecificTask(projectID, taskID);
@@ -520,7 +508,7 @@ exports.getTableView = async (req, res) => {
     session.returnUrl = req.originalUrl;
 
     try {
-        session.userProjects = await getUsersProjects(session.userID);
+        // session.userProjects = await getUsersProjects(session.userID);
         const tasksObject = await getProjectTasks(projectID);
         const tasks = tasksObject.tasks;
         const compStats = tasksObject.compStats;
@@ -539,7 +527,7 @@ exports.getKanbanView = async (req, res) => {
     session.returnUrl = req.originalUrl;
     
     try {
-        session.userProjects = await getUsersProjects(session.userID);
+        // session.userProjects = await getUsersProjects(session.userID);
         const tasksObject = await getProjectTasks(projectID);
         const tasks = tasksObject.tasks;
         const categories = tasksObject.compStats;
@@ -558,7 +546,7 @@ exports.getPriorityView = async (req, res) => {
     session.returnUrl = req.originalUrl;
     
     try {
-        session.userProjects = await getUsersProjects(session.userID);
+        // session.userProjects = await getUsersProjects(session.userID);
         const tasksObject = await getProjectTasks(projectID);
         const tasks = tasksObject.tasks;
         const categories = tasksObject.priorities;

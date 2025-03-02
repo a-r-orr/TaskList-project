@@ -12,20 +12,33 @@
         <div class="login-wrap tl-rounded">
             <img src="/images/TaskListLogo.png" alt="" id="logo">
             <h3 class="login-form-title">Create an Account</h3>
-            <form method="post" action="/register" class="login-form">
+            <form method="post" action="/register" class="login-form" id="register-form">
                 <div class="wrap-login-input">
-                    <input type="text" name="name" placeholder="Name" class="login-form-input">
+                    <label for="name">Your Name</label>
+                    <input type="text" name="name" id="name" placeholder="Name" class="login-form-input" required>
                 </div>
+                <p class="form-advice" id="name-advice"></p>
                 <div class="wrap-login-input">
-                    <input type="text" name="username" placeholder="Username" class="login-form-input">
+                    <label for="username">Username</label>
+                    <input type="text" name="username" id="username" placeholder="Username" class="login-form-input" required>
                 </div>
+                <p class="form-advice" id="username-advice"></p>
                 <div class="wrap-login-input">
-                    <input type="text" name="email" placeholder="Email" class="login-form-input">
+                    <label for="email">Email Address</label>
+                    <input type="email" name="email" id="email" placeholder="Email" class="login-form-input" required>
                 </div>
+                <p class="form-advice" id="email-advice"></p>
                 <div class="wrap-login-input">
-                    <input type="password" name="password" placeholder="Password" class="login-form-input">
+                    <label for="password">Password</label>
+                    <input type="password" name="password" id="password" placeholder="Password" class="login-form-input" required>
                 </div>
-                <button class="login-button">LOGIN</button>
+                <p class="form-advice" id="password-advice"></p>
+                <div class="wrap-login-input">
+                    <label for="confirmpassword">Confirm Password</label>
+                    <input type="password" name="confirmpassword" id="confirm-password" placeholder="Password" class="login-form-input" required>
+                </div>
+                <p class="form-advice" id="confirm-password-advice"></p>
+                <button class="login-button">Register</button>
             </form>
             <% if (error) { %>
                 <p class="return-message"><%= error %></p>
@@ -35,5 +48,76 @@
     </div>
 
 </body>
+
+<script>
+    const form = document.getElementById('register-form');
+
+    form.addEventListener('submit', function (event) {
+    //     console.log('submitted');
+        event.preventDefault();
+
+        const name = document.getElementById('name').value;
+        const nameAdvice = document.getElementById('name-advice');
+        const username = document.getElementById('username').value;
+        const usernameAdvice = document.getElementById('username-advice');
+        const email = document.getElementById('email').value;
+        const emailAdvice = document.getElementById('email-advice');
+        const password = document.getElementById('password').value;
+        const passwordAdvice = document.getElementById('password-advice');
+        const confirmPassword = document.getElementById('confirm-password').value;
+        const confirmPasswordAdvice = document.getElementById('confirm-password-advice');
+
+        const nameRegex = /^[a-zA-Z -']+$/;
+        const nameError = 'Name must use letters, dashes and apostrophes only';
+        const usernameRegex = /^[a-zA-Z0-9 -]+$/;
+        const usernameError = 'Username must be letters, numbers and dashes only';
+        const emailRegex = /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/g;
+        const emailError = 'Must be a valid email address';
+        const passwordRegex = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[a-zA-Z]).{8,}$/gm;
+        const passwordError = 'Password must contain 1 uppercase letter, 1 lowercase letter, and 1 number.';
+        const confirmPasswordError = 'Passwords do not match';
+        
+        let errorFlag = 0;
+
+        if (nameRegex.test(name) === false) {
+            nameAdvice.innerHTML = nameError;
+            errorFlag = 1;
+        } else {
+            nameAdvice.innerHTML = '';
+        }
+
+        if (usernameRegex.test(username) === false) {
+            usernameAdvice.innerHTML = usernameError;
+            errorFlag = 1;
+        } else {
+            usernameAdvice.innerHTML = '';
+        }
+
+        if (emailRegex.test(email) === false) {
+            emailAdvice.innerHTML = emailError;
+            errorFlag = 1;
+        } else {
+            emailAdvice.innerHTML = '';
+        }
+
+        if (passwordRegex.test(password) === false) {
+            passwordAdvice.innerHTML = passwordError;
+            errorFlag = 1;
+        } else {
+            passwordAdvice.innerHTML = '';
+        }
+        
+        if (password !== confirmPassword) {
+            confirmPasswordAdvice.innerHTML = confirmPasswordError;
+            errorFlag = 1;
+        } else {
+            confirmPasswordAdvice.innerHTML = '';
+        }
+
+        if (errorFlag === 0) {
+            this.submit();
+        }
+    });
+</script>
 
 </html>

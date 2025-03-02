@@ -45,18 +45,18 @@ for (val of compStatsData) {
 
 
 const today = todaysDate();
-const startOfThisWeek = new Date();
+const startOfThisWeek = new Date(today);
 startOfThisWeek.setDate(today.getDate()-today.getDay()+1);
-const startOfNextWeek = new Date();
+const startOfNextWeek = new Date(startOfThisWeek);
 startOfNextWeek.setDate(startOfThisWeek.getDate()+7);
-const startOfLastWeek = new Date();
+const startOfLastWeek = new Date(startOfThisWeek);
 startOfLastWeek.setDate(startOfThisWeek.getDate()-7);
 
 const dateFormat = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 
-// console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(today));
-// console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(startOfThisWeek));
-// console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(startOfNextWeek));
+console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(today));
+console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(startOfThisWeek));
+console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(startOfNextWeek));
 
 let createdThisWeek = 0, createdLastWeek = 0;
 let completedThisWeek = 0, completedLastWeek = 0;

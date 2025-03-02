@@ -253,7 +253,11 @@ nav a:hover {
     color: var(--tl-theme-dark);
 }
 
-@media (width < 1050px) {
+@media (width < 1000px) {
+    content {
+        flex-direction: column;
+    }
+
     .sidebar {
         width: 100%;
         flex-direction: row;
@@ -266,14 +270,12 @@ nav a:hover {
 }
 
 .container {
-    /* width: 95vw; */
+    max-width: 98vw;
     /* height: 180vh; */
-    /* height: 800px; */
-    /* display:block; */
     margin: 2em auto;
     padding: 0 30px;
     color: var(--tl-theme-dark);
-    flex-basis: 900px;
+    flex-basis: 800px;
     flex-grow: 9999;
 }
 
@@ -304,6 +306,8 @@ nav a:hover {
     font-size: 30px;
     color: var(--tl-theme-dark);
     text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
     /* padding-bottom: 20px; */
 }
 
@@ -317,17 +321,25 @@ nav a:hover {
 .wrap-form-input {
     width: 100%;
     border-bottom: 2px solid var(--tl-theme-keppel);
-    margin-bottom: 30px;
+    margin-top: 30px;
 }
 
 .wrap-form-input label {
-    font-size: 18px;
+    font-size: 16px;
     display: block;
     margin-bottom: -5px;
 }
 
+.form-advice {
+    height: 14px;
+    font-style: italic;
+    font-size: 14px;
+    margin: 0;
+    color: red;
+}
+
 .form-info-text {
-    font-size: 18px;
+    font-size: 16px;
     display: block;
     text-align: center;
 }
@@ -388,6 +400,7 @@ nav a:hover {
     width: 80%;
     margin-left: 10%;
     margin-bottom: 5px;
+    margin-top: 40px;
     height: 3em;
     outline: none;
     border: none;
@@ -399,10 +412,12 @@ nav a:hover {
 
 .delete-button {
     background-color: var(--tl-theme-dark);
+    margin-top: 5px;
 }
 
 .complete-button {
     background-color: var(--tl-theme-myrtle);
+    margin-top: 5px;
 }
 
 .form-button:hover {
