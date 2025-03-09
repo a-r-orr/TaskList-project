@@ -65,17 +65,19 @@
                             <input type="text" name="projectID" value="<%= currentProject.project_id %>" class="form-input" readonly>
                         </div>
 
-                        <input type="submit" value="Update Task" class="form-button">
-                        <input type="submit" value="Delete Task" class="form-button delete-button" onClick="return confirmDelete()" formaction="/delete-task/<%= task.task_id %>">
+                        <input type="submit" value="Update Task" class="form-button" formaction="/edit-task/<%= task.task_id %>" />
+                        <input type="submit" value="Delete Task" class="form-button delete-button" formaction="/delete-task/<%= task.task_id %>" onClick="return confirmDelete()" />
                     <% } else { %>
                         <div class="wrap-form-input">
                             <label for="taskName">Task Name</label>
-                            <input type="text" name="taskName" value="<%= task.task_name %>" class="form-input" readonly>
+                            <input type="text" name="taskName" id="task-name" value="<%= task.task_name %>" class="form-input" readonly>
                         </div>
+                        <p class="form-advice" id="name-advice"></p>
                         <div class="wrap-form-input">
                             <label for="taskDescription">Description</label>
-                            <input type="text" name="taskDescription" value="<%= task.description %>" class="form-input" readonly>
+                            <input type="text" name="taskDescription" id="task-desc" value="<%= task.description %>" class="form-input" readonly>
                         </div>
+                        <p class="form-advice" id="desc-advice"></p>
                         <div class="wrap-form-input custom-select">
                             <label for="priorityID">Priority Level</label>
                             <select name="priorityID" id="select-priority">
@@ -102,15 +104,16 @@
                         </div>
                         <div class="wrap-form-input">
                             <label for="dueDate">Due Date</label>
-                            <input type="date" name="dueDate" value="<%= task.due_date.slice(0,10) %>" class="form-input" readonly>
+                            <input type="date" name="dueDate" id="date" value="<%= task.due_date.slice(0,10) %>" class="form-input" readonly>
                         </div>
+                        <p class="form-advice" id="date-advice"></p>
                         <div class="wrap-form-input">
                             <label for="projectName">Part of this Project</label>
                             <input type="text" name="projectName" value="<%= currentProject.project_name %>" class="form-input" readonly>
                         </div>
                         <p class="form-info-text">This task was completed on <%= task.pretty_completed_date %></p>
                         <p class="form-info-text">To reactivate it, please change the Completion Status</p>
-                        <input type="submit" value="Update Task" class="form-button" formaction="/uncomplete-task/<%= task.task_id %>">
+                        <input type="submit" value="Update Task" class="form-button" formaction="/uncomplete-task/<%= task.task_id %>" />
                         <!-- <input type="submit" value="Delete Task" class="form-button delete-button" formaction="/delete-task/<%= task.task_id %>"> -->
                     <% } %>
                 </form>
@@ -163,7 +166,12 @@
             }
     
             if (errorFlag === 0) {
-                this.submit();
+                // Find the button that was clicked
+                const submitter = event.submitter;  
+                if (submitter && submitter.hasAttribute('formaction')) {
+                    form.action = submitter.getAttribute('formaction');
+                }
+                form.submit();
             }
         });
     </script>

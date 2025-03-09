@@ -1,9 +1,10 @@
+// Import modules and create router
 const express = require('express');
 const controller = require('./../controllers/tasklistControllers');
 const { isAuth } = require('./../middleware/mymiddleware');
-
 const router = express.Router();
 
+// Route requests to applicable controller functions, using middleware where needed
 router.get('/', controller.getRoot);
 
 router.get('/login', controller.getLogin);

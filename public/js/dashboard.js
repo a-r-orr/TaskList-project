@@ -1,3 +1,4 @@
+// Gather the priority labels for all non-completed tasks
 let priorities = tasksArray.map((task) => {
     if (task.completed_date === null) {
         return task.priority_name;
@@ -5,16 +6,15 @@ let priorities = tasksArray.map((task) => {
         return null;
     }
 });
+// Filter out any nulls
 let allPriorities = priorities.filter(el => el !== null);
 
-let allCompStats = tasksArray.map((task) => {
-    return task.completion_status_name;
-});
-
+// Get creation dates for all tasks
 let allCreatedDates = tasksArray.map((task) => {
     return Date.parse(task.created_date);
 });
 
+// Get due dates for all non-completed tasks
 let dueDates = tasksArray.map((task) => {
     if (task.completed_date === null) {
         return Date.parse(task.due_date);
@@ -22,28 +22,25 @@ let dueDates = tasksArray.map((task) => {
         return null;
     }
 });
+// Filter out any nulls
 let allDueDates = dueDates.filter(el => el !== null);
 
+// Get completion dates for all tasks
 let allCompletedDates = tasksArray.map((task) => {
     return Date.parse(task.completed_date);
 });
 
+// Get list of objects containing unique priority names and their counts, then sort by most common to least common
 const prioritiesData = getValuesAndCounts(allPriorities);
-const compStatsData = getValuesAndCounts(allCompStats);
 prioritiesData.sort((a,b) => b.count - a.count);
 
+// Add the tile colour for each priority name to its object for colouring the charts correctly
 for (val of prioritiesData) {
     let priorityDetail = prioritiesArray.find(priority => priority.priority_name === val.value);
     val.colour = priorityDetail.tile_colour;
-    // console.log(val);
 }
 
-for (val of compStatsData) {
-    let compStatDetail = compStatsArray.find(compStat => compStat.completion_status_name === val.value);
-    val.colour = compStatDetail.tile_colour;
-}
-
-
+// Set up significant dates for filtering data
 const today = todaysDate();
 const startOfThisWeek = new Date(today);
 startOfThisWeek.setDate(today.getDate()-today.getDay()+1);
@@ -52,17 +49,17 @@ startOfNextWeek.setDate(startOfThisWeek.getDate()+7);
 const startOfLastWeek = new Date(startOfThisWeek);
 startOfLastWeek.setDate(startOfThisWeek.getDate()-7);
 
-const dateFormat = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+// const dateFormat = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+// console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(today));
+// console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(startOfThisWeek));
+// console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(startOfNextWeek));
 
-console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(today));
-console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(startOfThisWeek));
-console.log(Intl.DateTimeFormat('en-GB', dateFormat).format(startOfNextWeek));
-
+// Initiate counter variable
 let createdThisWeek = 0, createdLastWeek = 0;
 let completedThisWeek = 0, completedLastWeek = 0;
 let overdue = 0, dueThisWeek = 0, dueBeyondThisWeek = 0;
 
-
+// Count created dates
 for (date of allCreatedDates) {
     if (date>=startOfThisWeek) {
         createdThisWeek+=1;
@@ -70,7 +67,7 @@ for (date of allCreatedDates) {
         createdLastWeek+=1;
     }
 }
-
+// Count due dates
 for (date of allDueDates) {
     if (date<today) {
         overdue+=1;
@@ -80,7 +77,7 @@ for (date of allDueDates) {
         dueBeyondThisWeek+=1;
     }
 }
-
+// Count completed dates
 for (date of allCompletedDates) {
     if (date>=startOfThisWeek) {
         completedThisWeek+=1;
@@ -91,6 +88,7 @@ for (date of allCompletedDates) {
 
 Chart.defaults.color = '#17252A';
 
+// Task Priorities chart setup
 const chart1Config = {
     type: 'bar',
     data: {
@@ -109,7 +107,6 @@ const chart1Config = {
         scales: { 
             y: {
                 beginAtZero: true,
-                // max: maxPriorityCount+1,
                 ticks: {
                     display: false
                 },
@@ -126,7 +123,6 @@ const chart1Config = {
         parsing: {
             xAxisKey: 'value',
             yAxisKey: 'count',
-            // backgroundColor: 'colour'
         },
         plugins: {
             legend: { display: false },
@@ -144,58 +140,8 @@ const chart1Config = {
 
 const chart1 = new Chart('dashboardChart1', chart1Config);
 
-/*
+// Tasks Created chart setup
 const chart2Config = {
-    type: 'bar',
-    data: {
-        datasets: [{
-            label: 'Tasks',
-            data: compStatsData,
-            backgroundColor: (c) => c.raw.colour
-        }]
-    },
-    options: {
-        responsive: false,
-        animation: true,
-        aspectRatio: 1,
-        maintainAspectRatio: true,
-        scales: { 
-            y: {
-                beginAtZero: true,
-                // max: maxPriorityCount+1,
-                ticks: {
-                    display: false
-                },
-                grid: {
-                    display: false
-                }
-            },
-            x: {
-                grid: {
-                    display: false
-                }
-            }
-        },
-        parsing: {
-            xAxisKey: 'value',
-            yAxisKey: 'count',
-            // backgroundColor: 'colour'
-        },
-        plugins: {
-            legend: { display: false },
-            tooltip: { enabled: true },
-            title: {
-                display: true,
-                text: 'Task Completion',
-                font: { size: 18 }
-            }
-        }
-    }
-};
-
-const chart2 = new Chart('dashboardChart2', chart2Config); */
-
-const chart3Config = {
     type: 'doughnut',
     data: {
         labels: ['This Week', 'Last Week'],
@@ -225,9 +171,10 @@ const chart3Config = {
     }
 };
 
-const chart3 = new Chart('dashboardChart3', chart3Config);
+const chart2 = new Chart('dashboardChart2', chart2Config);
 
-const chart4Config = {
+// Tasks Completed chart setup
+const chart3Config = {
     type: 'doughnut',
     data: {
         labels: ['This Week', 'Last Week'],
@@ -257,9 +204,10 @@ const chart4Config = {
     }
 };
 
-const chart4 = new Chart('dashboardChart4', chart4Config);
+const chart3 = new Chart('dashboardChart3', chart3Config);
 
-const chart5Config = {
+// Tasks Due chart setup
+const chart4Config = {
     type: 'doughnut',
     data: {
         labels: ['Overdue', 'Due This Week', 'Further Out'],
@@ -288,12 +236,14 @@ const chart5Config = {
     }
 };
 
-const chart5 = new Chart('dashboardChart5', chart5Config);
+const chart4 = new Chart('dashboardChart4', chart4Config);
 
 function getValuesAndCounts(inputArray) {
+    // Utility function to return a list of objects
+    // containing the unique values and their counts in the provided inputArray
     const uniqueVals = [...new Set(inputArray)];
     let result = [];
-    // let valCounts = [];
+    
     for (val of uniqueVals) {
         let count = inputArray.filter(item => item === val).length;
         result.push({ value: val, count: count });
@@ -303,6 +253,7 @@ function getValuesAndCounts(inputArray) {
 }
 
 function todaysDate() {
+    // Utility function to provide a date object with today's date
     const date = new Date();
     return date;
 }
